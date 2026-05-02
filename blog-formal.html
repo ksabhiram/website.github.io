@@ -1,0 +1,2273 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#f4f6f9" id="browserThemeColor">
+<script>
+  (function () {
+    const allThemes = ['ocean','sunset','grape','coral','forest','aurora','midnight','crimson','electric','plasma','terracotta','amber'];
+    let colorTheme = sessionStorage.getItem('colorTheme');
+    if (!colorTheme || !allThemes.includes(colorTheme)) {
+      colorTheme = allThemes[Math.floor(Math.random() * allThemes.length)];
+      sessionStorage.setItem('colorTheme', colorTheme);
+    }
+    document.documentElement.setAttribute('data-color', colorTheme);
+    const savedThemeMode = localStorage.getItem('themeMode');
+    const activeTheme = (savedThemeMode === 'dark' || savedThemeMode === 'light') ? savedThemeMode : 'light';
+    document.documentElement.setAttribute('data-theme', activeTheme);
+    const themeMeta = document.querySelector('meta[name="theme-color"]');
+    if (themeMeta) themeMeta.setAttribute('content', activeTheme === 'dark' ? '#030305' : '#f4f6f9');
+  })();
+</script>
+<title>Writing — Abhiram</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Source+Serif+4:ital,opsz,wght@0,8..60,200..900;1,8..60,200..900&family=Google+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ══════════ THEME VARIABLES ══════════ */
+:root {
+  --bg: #030305;
+  --text-main: #ffffff;
+  --text-muted: rgba(255,255,255,0.6);
+  --nav-bg: rgba(255,255,255,0.95);
+  --nav-text: #111111;
+  --card-bg: rgba(255,255,255,0.03);
+  --card-border: rgba(255,255,255,0.08);
+  --card-hover: rgba(255,255,255,0.07);
+  --tool-bg: rgba(255,255,255,0.1);
+  --mint: #00e5a0;
+  --blue: #3b3bff;
+  --violet: #6633ff;
+  --surface-radius: 26px;
+  --display-font: 'Source Serif 4', serif;
+}
+[data-theme="light"] {
+  --bg: #f4f6f9;
+  --text-main: #0a0a0f;
+  --text-muted: rgba(0,0,0,0.55);
+  --nav-bg: rgba(10,10,15,0.95);
+  --nav-text: #ffffff;
+  --card-bg: #ffffff;
+  --card-border: rgba(0,0,0,0.08);
+  --card-hover: #ffffff;
+  --tool-bg: rgba(0,0,0,0.08);
+}
+:root[data-color="ocean"]      { --mint:#0ea5e9; --blue:#06b6d4; --violet:#3b82f6; }
+:root[data-color="sunset"]     { --mint:#f97316; --blue:#fb923c; --violet:#f87171; }
+:root[data-color="grape"]      { --mint:#a855f7; --blue:#9333ea; --violet:#d946ef; }
+:root[data-color="coral"]      { --mint:#ff6b6b; --blue:#ff8787; --violet:#ff5252; }
+:root[data-color="forest"]     { --mint:#22c55e; --blue:#16a34a; --violet:#4ade80; }
+:root[data-color="aurora"]     { --mint:#34d399; --blue:#6ee7b7; --violet:#a78bfa; }
+:root[data-color="midnight"]   { --mint:#818cf8; --blue:#6366f1; --violet:#4f46e5; }
+:root[data-color="crimson"]    { --mint:#f43f5e; --blue:#e11d48; --violet:#be123c; }
+:root[data-color="electric"]   { --mint:#00fff0; --blue:#00d4ff; --violet:#7c3aed; }
+:root[data-color="plasma"]     { --mint:#ff00ff; --blue:#e040fb; --violet:#aa00ff; }
+:root[data-color="terracotta"] { --mint:#ea7c4f; --blue:#d97706; --violet:#b45309; }
+:root[data-color="amber"]      { --mint:#fbbf24; --blue:#f59e0b; --violet:#d97706; }
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'Google Sans', sans-serif;
+  background: var(--bg);
+  color: var(--text-main);
+  overflow-x: hidden;
+  cursor: none;
+  transition: background 0.5s ease, color 0.5s ease;
+}
+
+/* ── Cursor ── */
+#cur {
+  width: 14px; height: 14px; border-radius: 50%;
+  background: var(--mint);
+  position: fixed; top: 0; left: 0;
+  pointer-events: none; z-index: 9999;
+  transform: translate(-50%,-50%);
+  mix-blend-mode: difference;
+  transition: width .18s, height .18s, background .18s;
+}
+#cur.big { width: 36px; height: 36px; background: var(--violet); }
+
+/* ══════════ FIXED TOP CHROME ══════════ */
+.top-left-logo {
+  position: fixed; top: 20px; left: 20px; z-index: 9500;
+  width: 53px; height: 53px; border-radius: 50%; cursor: pointer;
+  background: url("logo.png") center/85% no-repeat; background-color: transparent;
+  display: flex; align-items: center; justify-content: center;
+  transition: transform 0.3s ease;
+}
+.top-left-logo:hover { transform: scale(1.05); }
+
+.top-talk-btn {
+  position: fixed; top: 20px; right: 24px; z-index: 9450;
+  border: 1px solid var(--card-border); border-radius: 999px;
+  background: var(--nav-bg); color: var(--nav-text);
+  padding: 0.65rem 1.1rem;
+  font-family: 'Google Sans', sans-serif; font-size: 0.92rem; font-weight: 700;
+  cursor: none; backdrop-filter: blur(16px);
+  transition: border-color .22s, color .22s, transform .22s;
+}
+.top-talk-btn:hover { border-color: var(--mint); color: var(--mint); transform: translateY(-1px); }
+html.modal-open .top-talk-btn { opacity: 0; visibility: hidden; pointer-events: none; }
+
+/* ══════════ TOP-LEFT TOOLS ══════════ */
+.top-left-tools {
+  position: fixed; top: 20px; left: 80px;
+  display: flex; align-items: center; gap: 12px; z-index: 9300;
+}
+.tool-btn {
+  background: var(--tool-bg); backdrop-filter: blur(10px);
+  border: 1px solid var(--card-border); border-radius: 50%;
+  height: 44px; width: 44px; display: flex; align-items: center; justify-content: center;
+  color: var(--text-main); cursor: none;
+  transition: border-color 0.2s, color 0.2s;
+}
+.tool-btn:hover { border-color: var(--mint); color: var(--mint); }
+.tool-btn svg { width: 18px; height: 18px; fill: currentColor; }
+.theme-toggle { border-radius: 999px; overflow: hidden; }
+.theme-toggle .icon-wrap { position: relative; width: 28px; height: 28px; display: grid; place-items: center; }
+.theme-toggle .icon-sun,
+.theme-toggle .icon-moon {
+  position: absolute; inset: 0; width: 28px; height: 28px;
+  stroke: currentColor; fill: none;
+  transition: opacity 0.35s ease, transform 0.45s cubic-bezier(0.4,0,0.2,1);
+}
+.theme-toggle .sun-rotor { transform-origin: 12px 12px; animation: sunSpin 10s linear infinite; }
+.theme-toggle .moon-cloud { transform-origin: 16px 17px; animation: moonFloat 3.2s ease-in-out infinite; }
+@keyframes sunSpin { to { transform: rotate(360deg); } }
+@keyframes moonFloat { 0%,100% { transform: translateX(0); } 50% { transform: translateX(-1.4px); } }
+html[data-theme="dark"] .theme-toggle .icon-sun { opacity: 0; transform: scale(0.7) rotate(-40deg); }
+html[data-theme="dark"] .theme-toggle .icon-moon { opacity: 1; }
+html[data-theme="light"] .theme-toggle .icon-sun { opacity: 1; }
+html[data-theme="light"] .theme-toggle .icon-moon { opacity: 0; transform: scale(0.7) rotate(30deg); }
+.home-shortcut { display: flex; align-items: center; justify-content: center; }
+.search-container { position: relative; display: flex; align-items: center; }
+.search-trigger {
+  position: absolute; left: 0; top: 0; width: 44px; height: 44px;
+  border-radius: 999px; border: 1px solid var(--card-border); background: var(--tool-bg);
+  backdrop-filter: blur(10px); display: flex; align-items: center; justify-content: center;
+  color: var(--text-main); cursor: none; z-index: 2;
+  transition: border-color .25s, color .25s;
+}
+.search-trigger:hover, .search-container:focus-within .search-trigger { border-color: var(--mint); color: var(--mint); }
+.search-input {
+  background: var(--tool-bg); backdrop-filter: blur(10px);
+  border: 1px solid var(--card-border); border-radius: 30px;
+  height: 44px; width: 44px; padding: 0 16px 0 54px;
+  color: var(--text-main); font-family: inherit; outline: none;
+  transition: width 0.4s ease, border-color 0.25s; cursor: none;
+}
+.search-input::placeholder { color: transparent; }
+.search-input:focus, .search-input:not(:placeholder-shown) { width: 200px; cursor: text; border-color: var(--mint); }
+.search-input:focus::placeholder { color: var(--text-muted); transition-delay: 0.3s; }
+
+/* ══════════ BOTTOM MAIN NAV ══════════ */
+.main-nav {
+  position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+  display: flex; align-items: center; list-style: none; z-index: 9000;
+  background: rgba(255,255,255,0.7); backdrop-filter: blur(30px) saturate(200%);
+  border-radius: 999px; padding: 8px 12px; gap: 2px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.12), inset 0 1px 2px rgba(255,255,255,0.5);
+  border: 1px solid rgba(255,255,255,0.25);
+}
+[data-theme="dark"] .main-nav {
+  background: rgba(20,20,30,0.6); border-color: rgba(255,255,255,0.15);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.35), inset 0 1px 2px rgba(255,255,255,0.1);
+  color: #fff;
+}
+.main-nav .nav-slider {
+  position: absolute; top: 8px; bottom: 8px; left: 0;
+  border-radius: 999px; background: rgba(0,0,0,0.05);
+  transition: transform 0.6s cubic-bezier(0.68,-0.55,0.265,1.55), width 0.6s cubic-bezier(0.68,-0.55,0.265,1.55);
+  z-index: 1; pointer-events: none;
+}
+[data-theme="dark"] .main-nav .nav-slider { background: rgba(255,255,255,0.1); }
+.main-nav li { position: relative; z-index: 2; }
+.main-nav a {
+  display: block; padding: 10px 20px;
+  font-family: 'Google Sans', sans-serif; font-size: 0.92rem; font-weight: 600;
+  color: inherit; text-decoration: none; white-space: nowrap;
+}
+.main-nav a svg { width: 18px; height: 18px; fill: currentColor; vertical-align: middle; }
+
+/* ══════════ TOP-CENTER WRITING SUB-NAV ══════════ */
+#writing-subnav {
+  position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
+  display: flex; align-items: center; list-style: none; z-index: 9100;
+  background: rgba(255,255,255,0.62); backdrop-filter: blur(30px) saturate(200%);
+  border-radius: 999px; padding: 7px 10px; gap: 2px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.10), inset 0 1px 2px rgba(255,255,255,0.5);
+  border: 1px solid rgba(255,255,255,0.28);
+}
+[data-theme="dark"] #writing-subnav {
+  background: rgba(20,20,30,0.55); border-color: rgba(255,255,255,0.14);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.35), inset 0 1px 2px rgba(255,255,255,0.08);
+  color: #fff;
+}
+#writing-subnav .subnav-slider {
+  position: absolute; top: 7px; bottom: 7px; left: 0;
+  border-radius: 999px; background: rgba(0,0,0,0.06);
+  transition: transform 0.55s cubic-bezier(0.68,-0.55,0.265,1.55), width 0.55s cubic-bezier(0.68,-0.55,0.265,1.55);
+  z-index: 1; pointer-events: none;
+}
+[data-theme="dark"] #writing-subnav .subnav-slider { background: rgba(255,255,255,0.12); }
+#writing-subnav li { position: relative; z-index: 2; }
+#writing-subnav a {
+  display: flex; align-items: center; gap: 6px;
+  padding: 9px 20px;
+  font-family: 'Google Sans', sans-serif; font-size: 0.88rem; font-weight: 600;
+  color: inherit; text-decoration: none; white-space: nowrap; border-radius: 999px;
+  transition: color 0.2s;
+}
+#writing-subnav a.active-sub { color: var(--mint); }
+#writing-subnav .tab-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: currentColor; opacity: 0.45;
+  transition: opacity 0.2s, transform 0.2s;
+}
+#writing-subnav a.active-sub .tab-dot { opacity: 1; transform: scale(1.25); }
+
+/* ══════════ HERO BANNER ══════════ */
+.section-hero {
+  position: relative;
+  width: 100%;
+  height: clamp(340px, 48vw, 580px);
+  overflow: hidden;
+  margin-bottom: 0;
+  display: none;
+}
+.section-hero.active { display: block; }
+.section-hero img {
+  width: 100%; height: 100%;
+  object-fit: cover; object-position: center 30%;
+  display: block;
+  transition: transform 8s ease;
+}
+.section-hero:hover img { transform: scale(1.03); }
+.section-hero::after {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(0,0,0,0.18) 0%,
+    rgba(0,0,0,0.0) 30%,
+    var(--bg) 100%
+  );
+  pointer-events: none;
+}
+.section-hero::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 120px;
+  background: linear-gradient(to bottom, rgba(0,0,0,0.45), transparent);
+  pointer-events: none; z-index: 1;
+}
+.hero-label {
+  position: absolute; bottom: 0; left: 0; right: 0;
+  z-index: 2; padding: clamp(1.5rem,4vw,3rem) clamp(1.5rem,5vw,5rem) clamp(1.2rem,3vw,2.2rem);
+}
+.hero-kicker {
+  display: inline-block; padding: .2rem .75rem;
+  border-radius: 999px; border: 1px solid rgba(255,255,255,0.3);
+  color: rgba(255,255,255,0.9); font-size: .72rem; font-weight: 700;
+  letter-spacing: .1em; text-transform: uppercase; margin-bottom: .9rem;
+  backdrop-filter: blur(8px); background: rgba(255,255,255,0.08);
+}
+.hero-title {
+  font-family: var(--display-font);
+  font-size: clamp(2rem, 5vw, 3.8rem);
+  font-weight: 300; line-height: 1.08;
+  letter-spacing: -.5px; text-shadow: 0 2px 24px rgba(0,0,0,0.4);
+  /* Always white on hero image */
+  color: #fff !important;
+}
+.hero-desc {
+  margin-top: .8rem;
+  font-size: clamp(.88rem,1.4vw,1rem);
+  max-width: 56ch; line-height: 1.7;
+  text-shadow: 0 1px 8px rgba(0,0,0,0.3);
+  /* Always black in light mode, white in dark — controlled per theme */
+  color: rgba(255,255,255,0.88);
+}
+[data-theme="light"] .hero-title { color: #000 !important; text-shadow: 0 2px 16px rgba(255,255,255,0.3); }
+[data-theme="light"] .hero-desc { color: #111 !important; text-shadow: 0 1px 6px rgba(255,255,255,0.4); }
+[data-theme="light"] .hero-kicker { color: #000 !important; border-color: rgba(0,0,0,0.3); background: rgba(255,255,255,0.55); }
+
+/* ── Hero image credit (bottom-right) ── */
+.hero-credit {
+  position: absolute; bottom: 10px; right: 14px;
+  z-index: 3;
+  font-family: 'Space Mono', monospace; font-size: .62rem;
+  color: rgba(255,255,255,0.7);
+  background: rgba(0,0,0,0.35); backdrop-filter: blur(6px);
+  padding: .18rem .55rem; border-radius: 6px;
+  text-decoration: none;
+  transition: color .2s;
+}
+.hero-credit:hover { color: #fff; }
+
+/* ══════════ CONTENT AREA ══════════ */
+.writing-section {
+  display: none;
+  padding-bottom: 7rem;
+}
+.writing-section.active { display: block; }
+
+.section-body {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 0 clamp(1.2rem,4vw,2.5rem);
+}
+
+/* ── Filter row ── */
+.filter-bar {
+  display: flex; align-items: center; gap: .6rem; flex-wrap: wrap;
+  padding: 1.6rem 0 2rem;
+  border-bottom: 1px solid var(--card-border);
+  margin-bottom: 2.4rem;
+}
+.filter-label {
+  font-size: .72rem; font-weight: 700; letter-spacing: .08em;
+  text-transform: uppercase; color: var(--text-muted); margin-right: .2rem;
+}
+.fpill {
+  padding: .3rem .9rem; border-radius: 999px;
+  border: 1px solid var(--card-border); background: transparent;
+  font-size: .8rem; font-weight: 600; color: var(--text-muted);
+  cursor: none; font-family: 'Google Sans', sans-serif;
+  transition: border-color .18s, color .18s, background .18s;
+}
+.fpill:hover, .fpill.active {
+  border-color: var(--mint); color: var(--mint);
+  background: color-mix(in srgb, var(--mint) 9%, transparent);
+}
+
+/* ── Section divider label ── */
+.section-label {
+  font-family: 'Space Mono', monospace; font-size: .72rem;
+  color: var(--text-muted); text-transform: uppercase; letter-spacing: .1em;
+  margin-bottom: 1.6rem; display: flex; align-items: center; gap: .8rem;
+}
+.section-label::after {
+  content: ''; flex: 1; height: 1px; background: var(--card-border);
+}
+
+/* ── Article / entry cards ── */
+.entry-list { display: flex; flex-direction: column; gap: 1px; }
+.entry-card {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: start;
+  gap: 1.2rem;
+  padding: 1.5rem 0;
+  border-bottom: 1px solid var(--card-border);
+  text-decoration: none; color: inherit;
+  transition: padding-left .22s ease;
+  cursor: none;
+}
+.entry-card:hover { padding-left: .6rem; }
+.entry-card:hover .entry-arrow { opacity: 1; transform: translateX(4px); }
+.entry-meta {
+  display: flex; align-items: center; gap: .5rem; flex-wrap: wrap;
+  margin-bottom: .45rem;
+}
+.entry-tag {
+  font-family: 'Space Mono', monospace; font-size: .68rem;
+  color: var(--mint); letter-spacing: .04em; text-transform: uppercase;
+}
+.entry-dot { width: 3px; height: 3px; border-radius: 50%; background: var(--text-muted); opacity: .5; }
+.entry-date { font-size: .78rem; color: var(--text-muted); }
+.entry-title {
+  font-family: var(--display-font);
+  font-size: clamp(1rem, 2vw, 1.18rem); font-weight: 400;
+  line-height: 1.4; margin-bottom: .4rem; color: var(--text-main);
+}
+.entry-excerpt {
+  font-size: .86rem; color: var(--text-muted); line-height: 1.7;
+}
+.entry-arrow {
+  font-size: 1.1rem; color: var(--mint); opacity: 0;
+  transition: opacity .2s, transform .2s;
+  align-self: center; flex-shrink: 0;
+}
+.entry-thumb {
+  width: 90px; height: 68px; border-radius: 10px;
+  object-fit: cover; flex-shrink: 0;
+  border: 1px solid var(--card-border);
+  align-self: center;
+}
+
+/* ── Featured entry ── */
+.entry-card.featured {
+  grid-template-columns: 1fr;
+  padding: 0 0 1.8rem;
+  border-bottom: 1px solid var(--card-border);
+  margin-bottom: .4rem;
+}
+.entry-card.featured .entry-thumb {
+  width: 100%; height: clamp(160px, 22vw, 240px);
+  border-radius: 14px; margin-bottom: 1rem; display: block;
+}
+.entry-card.featured .entry-title { font-size: clamp(1.2rem, 2.8vw, 1.55rem); }
+.entry-card.featured .entry-arrow { display: none; }
+
+/* ══════════ COMMENTARIES — STAR RATING ══════════ */
+.star-rating-wrap {
+  display: flex; align-items: center; gap: .5rem;
+  margin-top: .5rem;
+}
+.stars-display {
+  display: flex; gap: 2px;
+}
+.star-svg {
+  width: 16px; height: 16px; flex-shrink: 0;
+}
+.star-rating-input {
+  display: flex; align-items: center; gap: 6px; margin-top: .45rem;
+}
+.star-rating-input label {
+  font-size: .72rem; color: var(--text-muted); font-family: 'Space Mono', monospace;
+  white-space: nowrap;
+}
+.star-number-input {
+  width: 52px; padding: .18rem .45rem;
+  border-radius: 8px; border: 1px solid var(--card-border);
+  background: var(--tool-bg); color: var(--text-main);
+  font-family: 'Space Mono', monospace; font-size: .78rem;
+  outline: none; cursor: text;
+  transition: border-color .2s;
+}
+.star-number-input:focus { border-color: var(--mint); }
+
+/* ══════════ COMMENTARIES — INLINE EXPAND ══════════ */
+.commentary-card {
+  border-bottom: 1px solid var(--card-border);
+  padding: 1.5rem 0 0;
+  cursor: none;
+}
+.commentary-card-header {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: start;
+  gap: 1.2rem;
+  cursor: none;
+  padding-bottom: 1rem;
+  transition: padding-left .22s;
+}
+.commentary-card-header:hover { padding-left: .6rem; }
+.commentary-card-actions {
+  display: flex; align-items: center; gap: .6rem;
+  padding-bottom: 1rem;
+}
+.preview-btn, .expand-btn, .open-article-btn {
+  display: inline-flex; align-items: center; gap: .35rem;
+  padding: .3rem .85rem; border-radius: 999px;
+  font-family: 'Google Sans', sans-serif; font-size: .78rem; font-weight: 600;
+  border: 1px solid var(--card-border); background: transparent;
+  color: var(--text-muted); cursor: none;
+  transition: border-color .18s, color .18s, background .18s;
+}
+.preview-btn:hover, .expand-btn:hover {
+  border-color: var(--mint); color: var(--mint);
+  background: color-mix(in srgb, var(--mint) 8%, transparent);
+}
+.open-article-btn {
+  border-color: var(--mint); color: var(--mint);
+  background: color-mix(in srgb, var(--mint) 8%, transparent);
+}
+.open-article-btn:hover {
+  background: var(--mint); color: #000;
+}
+.commentary-preview {
+  display: none;
+  overflow: hidden;
+  border-top: 1px solid var(--card-border);
+  background: var(--card-bg);
+  border-radius: 0 0 14px 14px;
+  padding: 1.4rem 1.6rem;
+  margin-bottom: 1.2rem;
+  max-height: 0;
+  transition: max-height 0.45s cubic-bezier(0.4,0,0.2,1), padding 0.3s;
+}
+.commentary-preview.open {
+  display: block;
+  max-height: 400px;
+}
+.commentary-preview-text {
+  font-size: .9rem; color: var(--text-muted); line-height: 1.8;
+  font-family: var(--display-font);
+}
+.commentary-preview-text p + p { margin-top: .8rem; }
+.preview-footer {
+  display: flex; justify-content: flex-end;
+  margin-top: 1.1rem; padding-top: .9rem;
+  border-top: 1px dashed var(--card-border);
+}
+
+/* ══════════ RESOURCES ══════════ */
+.resource-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 1rem;
+}
+.resource-card {
+  padding: 1.4rem 1.5rem;
+  background: var(--card-bg); border: 1px solid var(--card-border);
+  border-radius: 16px; text-decoration: none; color: inherit;
+  display: flex; flex-direction: column; gap: .6rem;
+  transition: border-color .22s, transform .22s, box-shadow .22s;
+  cursor: none;
+  position: relative; overflow: hidden;
+}
+.resource-card::before {
+  content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 2px;
+  background: linear-gradient(90deg, var(--blue), var(--mint));
+  transform: scaleX(0); transform-origin: left;
+  transition: transform .3s ease;
+}
+.resource-card:hover { border-color: var(--mint); transform: translateY(-3px); box-shadow: 0 8px 28px rgba(0,0,0,0.07); }
+.resource-card:hover::before { transform: scaleX(1); }
+.resource-icon {
+  font-size: 1.4rem; line-height: 1;
+  width: 38px; height: 38px; display: flex; align-items: center; justify-content: center;
+  border-radius: 10px; background: var(--tool-bg); border: 1px solid var(--card-border);
+}
+.resource-title {
+  font-family: var(--display-font); font-size: .96rem; font-weight: 400;
+  color: var(--text-main); line-height: 1.35;
+}
+.resource-desc { font-size: .81rem; color: var(--text-muted); line-height: 1.6; }
+.resource-badge {
+  display: inline-flex; align-items: center; gap: .4rem; margin-top: auto;
+  padding: .15rem .6rem; border-radius: 999px; border: 1px solid var(--card-border);
+  font-family: 'Space Mono', monospace; font-size: .65rem; color: var(--text-muted);
+}
+/* PDF link icon on resource badge */
+.resource-pdf-link {
+  display: inline-flex; align-items: center; gap: .3rem;
+  margin-top: auto; align-self: flex-start;
+  padding: .22rem .7rem; border-radius: 8px; border: 1px solid var(--card-border);
+  font-family: 'Space Mono', monospace; font-size: .65rem; color: var(--mint);
+  text-decoration: none;
+  transition: border-color .18s, background .18s;
+}
+.resource-pdf-link:hover { border-color: var(--mint); background: color-mix(in srgb, var(--mint) 8%, transparent); }
+.resource-pdf-link svg { width: 11px; height: 11px; fill: currentColor; }
+/* Resources section label group */
+.resource-section-group { }
+.resource-section-group[data-hidden="true"] { display: none; }
+
+/* ══════════ PODCAST CARDS ══════════ */
+.podcast-list { display: flex; flex-direction: column; gap: 1rem; }
+.podcast-card {
+  display: grid; grid-template-columns: 80px 1fr auto; gap: 1.2rem;
+  padding: 1.2rem 1.4rem; border-radius: 16px;
+  background: var(--card-bg); border: 1px solid var(--card-border);
+  text-decoration: none; color: inherit; cursor: none;
+  align-items: center;
+  transition: border-color .22s, transform .22s;
+}
+.podcast-card:hover { border-color: var(--mint); }
+.podcast-thumb {
+  width: 80px; height: 80px; border-radius: 12px; object-fit: cover;
+  border: 1px solid var(--card-border); flex-shrink: 0;
+}
+.podcast-tag { font-family:'Space Mono',monospace; font-size:.68rem; color:var(--mint); text-transform:uppercase; letter-spacing:.05em; margin-bottom:.3rem; }
+.podcast-title { font-family:var(--display-font); font-size:1rem; font-weight:400; line-height:1.35; margin-bottom:.35rem; color:var(--text-main); }
+.podcast-meta-row { display:flex; align-items:center; gap:.55rem; flex-wrap:wrap; }
+.podcast-meta { font-size:.8rem; color:var(--text-muted); }
+.podcast-date { font-size:.75rem; color:var(--text-muted); font-family:'Space Mono',monospace; }
+.podcast-play-btn {
+  width: 36px; height: 36px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--blue), var(--mint));
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; border: none; cursor: none;
+  transition: transform .2s, box-shadow .2s;
+}
+.podcast-play-btn:hover { transform: scale(1.1); box-shadow: 0 4px 18px rgba(0,0,0,0.18); }
+.podcast-play-btn svg { width:12px; height:12px; fill:#fff; margin-left:2px; }
+.podcast-play-btn.playing svg { margin-left: 0; }
+
+/* ── Full podcast player (expands below card) ── */
+.podcast-player-wrap {
+  display: none;
+  flex-direction: column;
+  gap: 0;
+  background: var(--card-bg);
+  border: 1px solid var(--mint);
+  border-top: none;
+  border-radius: 0 0 16px 16px;
+  padding: 1.2rem 1.4rem 1rem;
+  margin-top: -8px;
+}
+.podcast-player-wrap.open { display: flex; }
+
+/* Controls row */
+.player-controls {
+  display: flex; align-items: center; gap: .75rem;
+  flex-wrap: wrap;
+}
+.player-btn {
+  background: var(--tool-bg); border: 1px solid var(--card-border);
+  border-radius: 50%; width: 32px; height: 32px;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--text-main); cursor: none; font-size: .7rem;
+  transition: border-color .18s, color .18s;
+}
+.player-btn:hover { border-color: var(--mint); color: var(--mint); }
+.player-btn svg { width: 13px; height: 13px; fill: currentColor; }
+.player-btn.play-pause {
+  width: 38px; height: 38px;
+  background: linear-gradient(135deg, var(--blue), var(--mint));
+  border: none; color: #fff;
+}
+.player-btn.play-pause:hover { transform: scale(1.08); }
+.player-btn.skip-text { font-family: 'Space Mono', monospace; font-size: .6rem; width: auto; border-radius: 20px; padding: 0 .6rem; gap: .2rem; }
+
+/* Timeline */
+.player-timeline-wrap { flex: 1; min-width: 160px; display: flex; flex-direction: column; gap: .2rem; }
+.player-time-labels { display: flex; justify-content: space-between; font-family: 'Space Mono', monospace; font-size: .6rem; color: var(--text-muted); }
+.player-timeline {
+  width: 100%; height: 5px; border-radius: 99px;
+  appearance: none; background: var(--card-border); cursor: none; outline: none;
+  accent-color: var(--mint);
+}
+.player-timeline::-webkit-slider-thumb { cursor: none; }
+
+/* Speed & volume */
+.player-extras {
+  display: flex; align-items: center; gap: .75rem; flex-wrap: wrap;
+  margin-top: .5rem;
+}
+.speed-select {
+  background: var(--tool-bg); border: 1px solid var(--card-border);
+  border-radius: 8px; padding: .2rem .5rem;
+  color: var(--text-main); font-family: 'Space Mono', monospace; font-size: .7rem;
+  cursor: none; outline: none;
+  transition: border-color .18s;
+}
+.speed-select:focus { border-color: var(--mint); }
+.volume-wrap { display: flex; align-items: center; gap: .4rem; }
+.volume-wrap label { font-family: 'Space Mono', monospace; font-size: .65rem; color: var(--text-muted); }
+.volume-slider {
+  width: 70px; height: 4px; border-radius: 99px;
+  appearance: none; background: var(--card-border); cursor: none; outline: none;
+  accent-color: var(--mint);
+}
+.volume-slider::-webkit-slider-thumb { cursor: none; }
+
+/* Transcript */
+.transcript-toggle-btn {
+  margin-left: auto; background: transparent; border: 1px solid var(--card-border);
+  border-radius: 999px; padding: .2rem .75rem;
+  font-family: 'Google Sans', sans-serif; font-size: .72rem; font-weight: 600;
+  color: var(--text-muted); cursor: none;
+  transition: border-color .18s, color .18s;
+}
+.transcript-toggle-btn:hover { border-color: var(--mint); color: var(--mint); }
+.player-transcript {
+  display: none; margin-top: .9rem;
+  border-top: 1px dashed var(--card-border);
+  padding-top: .9rem;
+}
+.player-transcript.open { display: block; }
+.transcript-text {
+  font-size: .82rem; color: var(--text-muted); line-height: 1.85;
+  font-family: var(--display-font);
+  max-height: 220px; overflow-y: auto;
+  padding-right: .5rem;
+}
+.transcript-text::-webkit-scrollbar { width: 3px; }
+.transcript-text::-webkit-scrollbar-thumb { background: var(--mint); border-radius: 99px; }
+.transcript-full-btn {
+  margin-top: .7rem; background: transparent; border: none;
+  font-family: 'Space Mono', monospace; font-size: .68rem;
+  color: var(--mint); cursor: none; text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.transcript-full-btn:hover { opacity: .75; }
+
+/* Full transcript modal */
+.transcript-modal {
+  display: none; position: fixed; inset: 0; z-index: 10500;
+  align-items: center; justify-content: center;
+}
+.transcript-modal.open { display: flex; }
+.transcript-modal-bg { position: absolute; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(18px); }
+.transcript-modal-box {
+  position: relative; z-index: 2;
+  background: var(--bg); border: 1px solid var(--card-border);
+  border-radius: 20px; width: min(90vw, 680px); max-height: 80vh;
+  display: flex; flex-direction: column;
+  padding: 2rem;
+  overflow: hidden;
+}
+.transcript-modal-title { font-family: var(--display-font); font-size: 1.1rem; margin-bottom: 1rem; color: var(--text-main); }
+.transcript-modal-body {
+  overflow-y: auto; font-size: .88rem; color: var(--text-muted);
+  line-height: 1.9; font-family: var(--display-font);
+  padding-right: .5rem;
+}
+.transcript-modal-body::-webkit-scrollbar { width: 3px; }
+.transcript-modal-body::-webkit-scrollbar-thumb { background: var(--mint); border-radius: 99px; }
+.transcript-modal-close {
+  position: absolute; top: 14px; right: 16px;
+  background: var(--tool-bg); border: 1px solid var(--card-border); border-radius: 50%;
+  width: 30px; height: 30px; display: flex; align-items: center; justify-content: center;
+  color: var(--text-main); font-size: 16px; cursor: pointer;
+  transition: transform .2s;
+}
+.transcript-modal-close:hover { transform: rotate(90deg); }
+
+/* ── Podcast card outer wrap ── */
+.podcast-item { }
+
+/* ── Reveal ── */
+.rv { opacity: 0; transform: translateY(22px); transition: opacity .65s, transform .65s; }
+.rv.in { opacity: 1; transform: none; }
+.rv.d1 { transition-delay: .08s; }
+.rv.d2 { transition-delay: .16s; }
+.rv.d3 { transition-delay: .24s; }
+.rv.d4 { transition-delay: .32s; }
+.rv.d5 { transition-delay: .40s; }
+
+/* ══════════ FOOTER ══════════ */
+.black-pill {
+  width: min(94vw,1328px); height: 8px;
+  margin: 2.4rem auto 0; background: #ffd700; border-radius: 12px;
+}
+.footer-paper-layer {
+  --fr: calc(var(--surface-radius) + 2px);
+  position: relative; width: 100%; height: 72px;
+  margin-bottom: calc(-1 * var(--fr)); z-index: 0;
+  background:
+    radial-gradient(circle at left bottom, transparent calc(var(--fr) + 1px), var(--bg) calc(var(--fr) + 2px)) left bottom/50% 100% no-repeat,
+    radial-gradient(circle at right bottom, transparent calc(var(--fr) + 1px), var(--bg) calc(var(--fr) + 2px)) right bottom/50% 100% no-repeat,
+    var(--bg);
+  pointer-events: none;
+}
+.site-footer {
+  --fr: calc(var(--surface-radius) + 2px);
+  position: relative; width: 100%;
+  background: var(--text-main); color: var(--bg);
+  border-radius: var(--fr) var(--fr) 0 0;
+  padding: 78px 20px 112px; z-index: 1;
+}
+.site-footer-inner {
+  width: min(100%,1328px); margin: 0 auto;
+  display: grid; grid-template-columns: 1fr; gap: 28px;
+}
+.site-footer-mark { font-family: var(--display-font); font-size: clamp(1.5rem,2.2vw,1.95rem); font-weight: 400; }
+.site-footer-tagline { color: color-mix(in srgb, var(--bg) 72%, transparent); max-width: 36ch; line-height: 1.55; margin-top: 8px; }
+.site-footer-nav { display: grid; grid-template-columns: repeat(2,minmax(120px,1fr)); gap: 22px 30px; margin-top: 10px; }
+.site-footer-nav-col { display: flex; flex-direction: column; gap: 10px; }
+.site-footer-nav a { color: var(--bg); text-decoration: none; font-weight: 600; transition: opacity .2s; }
+.site-footer-nav a:hover { opacity: .75; }
+.site-footer-copy { color: color-mix(in srgb, var(--bg) 66%, transparent); font-size: .86rem; }
+@media (min-width: 720px) {
+  .site-footer { padding: 84px 64px 118px; }
+  .site-footer-inner { grid-template-columns: auto minmax(auto,376px); grid-template-rows: auto auto; column-gap: 54px; row-gap: 24px; align-items: start; }
+  .site-footer-copy { grid-column: 1 / -1; }
+}
+
+/* ══════════ CONTACT MODAL ══════════ */
+.modal-overlay {
+  position: fixed; inset: 0; display: none; align-items: center; justify-content: center;
+  z-index: 10000; opacity: 0; transition: opacity 0.4s; overflow: hidden;
+}
+.modal-overlay.active { display: flex !important; opacity: 1 !important; }
+.liquid-glass-bg {
+  position: absolute; inset: 0;
+  background: linear-gradient(135deg,rgba(10,10,20,0.25),rgba(20,20,40,0.35));
+  backdrop-filter: blur(40px); z-index: 1;
+}
+.close-btn-modal {
+  position: fixed; top: 20px; right: 24px; width: 38px; height: 38px;
+  border: 1px solid var(--card-border); background: var(--nav-bg); color: var(--nav-text);
+  font-size: 24px; cursor: pointer; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.3s; z-index: 9900; backdrop-filter: blur(16px);
+}
+.close-btn-modal:hover { transform: rotate(90deg); }
+.contact-headline-wrap { margin-bottom: 34px; animation: greetAppear 1.3s cubic-bezier(0.2,0.95,0.2,1) forwards; }
+.contact-rows { opacity: 0; animation: revealRows 0.78s ease-out 1.12s forwards; }
+@keyframes greetAppear {
+  0% { transform: translate(var(--wx,0px),var(--wy,28vh)) scale(1.08); }
+  100% { transform: translate(0,0) scale(1); }
+}
+@keyframes revealRows { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:none; } }
+.contact-schematic {
+  display: grid; gap: 18px;
+  grid-template-columns: repeat(2, minmax(0,1fr));
+  grid-template-areas: "collab hiring" "figure actions";
+}
+.top-pill { min-height:200px; display:flex; flex-direction:column; justify-content:space-between; }
+.figure-block { height:200px; position:relative; overflow:hidden; transition:all .4s cubic-bezier(0.34,1.56,0.64,1); }
+.figure-overlay { position:absolute; inset:0; background:linear-gradient(90deg,rgba(255,255,255,0.09),rgba(255,255,255,0.03)); pointer-events:none; }
+.figure-content { position:absolute; inset:0; z-index:2; padding:26px; display:flex; flex-direction:column; justify-content:space-between; }
+.c-eyebrow { font-size:.8rem; letter-spacing:2px; text-transform:uppercase; color:rgba(255,255,255,0.82); font-weight:700; }
+.c-copy { font-size:1.3rem; color:var(--text-main); font-weight:500; margin:0; line-height:1.4; max-width:250px; }
+.c-arrow { font-size:1.8rem; opacity:.6; transition:all .3s; }
+.contact-option:hover { background:rgba(255,255,255,0.12)!important; border-color:rgba(255,255,255,0.25)!important; transform:translateY(-8px); box-shadow:0 15px 50px rgba(0,0,0,0.3); }
+.contact-option.top-pill:hover .c-arrow { opacity:1; transform:translateX(8px); }
+.figure-block:hover .c-arrow { opacity:1; transform:translateX(8px); }
+.mini-actions { display:grid; grid-template-columns:1fr; gap:10px; align-content:start; }
+.mini-row { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; }
+.c-btn { border-radius:14px; padding:12px 16px; cursor:pointer; transition:all .35s; backdrop-filter:blur(10px); }
+.c-btn .c-lbl { font-size:.66rem; letter-spacing:1.5px; text-transform:uppercase; color:rgba(255,255,255,0.72); font-weight:700; margin-bottom:6px; }
+.c-btn .c-val { font-size:.9rem; color:var(--text-main); font-weight:600; word-break:break-all; }
+.email-btn { background:linear-gradient(120deg,rgba(66,133,244,.28) 0%,rgba(234,67,53,.24) 38%,rgba(251,188,5,.23) 68%,rgba(52,168,83,.26) 100%)!important; border:1px solid rgba(255,255,255,0.22)!important; }
+.email-btn:hover { background:linear-gradient(120deg,#4285f4 0%,#ea4335 38%,#fbbc05 68%,#34a853 100%)!important; transform:translateY(-2px); }
+.wa-btn   { background:rgba(37,211,102,.22); border:1px solid rgba(37,211,102,.5); }
+.wa-btn:hover   { background:#25d366!important; border-color:#25d366!important; transform:translateY(-2px); }
+.ig-btn   { background:rgba(228,64,95,.2); border:1px solid rgba(228,64,95,.5); }
+.ig-btn:hover   { background:#e4405f!important; border-color:#e4405f!important; transform:translateY(-2px); }
+.sl-btn   { background:rgba(74,21,75,.22); border:1px solid rgba(74,21,75,.5); }
+.sl-btn:hover   { background:#4a154b!important; border-color:#4a154b!important; transform:translateY(-2px); }
+.li-btn   { background:rgba(10,102,194,.22); border:1px solid rgba(10,102,194,.5); }
+.li-btn:hover   { background:#0a66c2!important; border-color:#0a66c2!important; transform:translateY(-2px); }
+.c-btn:hover .c-lbl, .c-btn:hover .c-val { color:#fff!important; }
+
+@media (max-width:1024px) {
+  .contact-schematic { grid-template-columns:1fr; grid-template-areas:"collab""hiring""figure""actions"; }
+  .figure-block { height:auto; aspect-ratio:16/11; }
+}
+@media (max-width:640px) {
+  .mini-row { grid-template-columns:repeat(2,minmax(0,1fr)); }
+}
+@media (max-width:600px) {
+  .top-left-tools { top:1rem; left:4rem; }
+  .top-talk-btn { top:14px; right:14px; padding:.58rem .92rem; font-size:.86rem; }
+  #writing-subnav { top:74px; }
+  .section-hero { height: clamp(240px, 55vw, 380px); }
+}
+</style>
+</head>
+<body>
+
+<div id="cur"></div>
+
+<!-- TOP-LEFT LOGO -->
+<a href="index.html" class="top-left-logo" aria-label="Home"></a>
+
+<!-- TOP-LEFT TOOLS -->
+<div class="top-left-tools">
+  <div class="search-container">
+    <button class="search-trigger" aria-label="Search">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    </button>
+    <input type="text" class="search-input" placeholder="Search…" aria-label="Search">
+  </div>
+  <a href="index.html" class="tool-btn home-shortcut" aria-label="Home">
+    <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+  </a>
+  <button class="tool-btn theme-toggle" id="themeBtn" aria-label="Toggle theme">
+    <div class="icon-wrap">
+      <svg class="icon-sun" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <defs><radialGradient id="sG" cx="50%" cy="45%" r="55%"><stop offset="0%" stop-color="#FFD37A"/><stop offset="40%" stop-color="#FF9A3C"/><stop offset="100%" stop-color="#FF6A00"/></radialGradient></defs>
+        <g class="sun-rotor"><circle cx="12" cy="12" r="5" fill="url(#sG)" stroke="none"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></g>
+      </svg>
+      <svg class="icon-moon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+        <g class="moon-cloud"><ellipse cx="16" cy="17" rx="4.5" ry="2.5" fill="currentColor" opacity="0.45"/><ellipse cx="18.5" cy="16.5" rx="3" ry="2" fill="currentColor" opacity="0.5"/><ellipse cx="14" cy="18" rx="2.5" ry="1.5" fill="currentColor" opacity="0.35"/></g>
+      </svg>
+    </div>
+  </button>
+</div>
+
+<!-- TOP-CENTER WRITING SUB-NAV -->
+<ul id="writing-subnav" role="tablist" aria-label="Writing sections">
+  <div class="subnav-slider" id="subnav-slider" aria-hidden="true"></div>
+  <li role="presentation"><a href="#blog" data-section="blog" role="tab" aria-selected="true" class="active-sub"><span class="tab-dot"></span>Blog</a></li>
+  <li role="presentation"><a href="#commentaries" data-section="commentaries" role="tab" aria-selected="false"><span class="tab-dot"></span>Commentaries</a></li>
+  <li role="presentation"><a href="#resources" data-section="resources" role="tab" aria-selected="false"><span class="tab-dot"></span>Resources</a></li>
+  <li role="presentation"><a href="#podcast" data-section="podcast" role="tab" aria-selected="false"><span class="tab-dot"></span>Podcast</a></li>
+</ul>
+
+<!-- LET'S TALK -->
+<button type="button" class="top-talk-btn" data-open-modal>Let's Talk</button>
+
+<!-- ══════════ HERO BANNERS ══════════ -->
+
+<div class="section-hero active" id="hero-blog">
+  <img src="https://www.quantamagazine.org/wp-content/uploads/2026/02/Brain-Cartography-cr.Irena-Gajic-HP-scaled.webp" alt="Blog hero">
+  <div class="hero-label">
+    <span class="hero-kicker">Writing · Blog</span>
+    <h1 class="hero-title">Ideas worth<br>putting into words.</h1>
+    <p class="hero-desc">Essays, reflections, and arguments — formal or loose — on physics, science communication, and the craft of research.</p>
+  </div>
+  <a href="https://www.quantamagazine.org" target="_blank" rel="noreferrer" class="hero-credit">QM · cr. Irena Gajic</a>
+</div>
+
+<div class="section-hero" id="hero-commentaries">
+  <img src="https://www.quantamagazine.org/wp-content/uploads/2022/12/YiR-COMMENTS-byMyriamWares-Lede-scaled.webp" alt="Commentaries hero">
+  <div class="hero-label">
+    <span class="hero-kicker">Writing · Commentaries</span>
+    <h1 class="hero-title">Reading carefully,<br>thinking aloud.</h1>
+    <p class="hero-desc">Responses to books, papers, and ideas that shaped how I see physics and science at large.</p>
+  </div>
+  <a href="https://www.quantamagazine.org" target="_blank" rel="noreferrer" class="hero-credit">QM · cr. Myriam Wares</a>
+</div>
+
+<div class="section-hero" id="hero-resources">
+  <img src="https://www.quantamagazine.org/wp-content/uploads/2026/02/TheEvolvingFoundationsOfMath-crKristinaArmitage-Lede-Hub-scaled.jpg" alt="Resources hero">
+  <div class="hero-label">
+    <span class="hero-kicker">Writing · Resources</span>
+    <h1 class="hero-title">Tools for doing<br>science well.</h1>
+    <p class="hero-desc">LaTeX templates, software guides, and physics notes curated for serious students and researchers.</p>
+  </div>
+  <a href="https://www.quantamagazine.org" target="_blank" rel="noreferrer" class="hero-credit">QM · cr. Kristina Armitage</a>
+</div>
+
+<div class="section-hero" id="hero-podcast">
+  <img src="https://www.quantamagazine.org/wp-content/uploads/2023/10/QuantifyingQuantumness-byPeterGreenwood-Lede-scaled.webp" alt="Podcast hero">
+  <div class="hero-label">
+    <span class="hero-kicker">Writing · Podcast</span>
+    <h1 class="hero-title">Conversations<br>on the frontier.</h1>
+    <p class="hero-desc">Episodes and recommendations from podcasts that cover physics, mathematics, and the practice of science.</p>
+  </div>
+  <a href="https://www.quantamagazine.org" target="_blank" rel="noreferrer" class="hero-credit">QM · cr. Peter Greenwood</a>
+</div>
+
+<!-- ══════════ BLOG SECTION ══════════ -->
+<div class="writing-section active" id="blog">
+  <div class="section-body">
+    <div class="filter-bar rv">
+      <span class="filter-label">Filter</span>
+      <button class="fpill active" data-filter="all">All</button>
+      <button class="fpill" data-filter="formal">Formal</button>
+      <button class="fpill" data-filter="informal">Informal</button>
+      <button class="fpill" data-filter="papers">Papers</button>
+    </div>
+    <div class="entry-list" id="blog-list">
+      <a class="entry-card featured rv d1" href="#" data-tag="formal">
+        <img class="entry-thumb" src="https://www.quantamagazine.org/wp-content/uploads/2026/02/Brain-Cartography-cr.Irena-Gajic-HP-scaled.webp" alt="Featured post">
+        <div>
+          <div class="entry-meta">
+            <span class="entry-tag">Formal</span>
+            <span class="entry-dot"></span>
+            <span class="entry-date">March 2025</span>
+          </div>
+          <div class="entry-title">Why the Seebeck Coefficient Is Not Just a Number: A Transport Perspective</div>
+          <div class="entry-excerpt">Most introductions to thermoelectrics define S and move on. This essay argues that the Seebeck coefficient is better understood as an entropy current density, and unpacks what that means for band engineering.</div>
+        </div>
+      </a>
+      <a class="entry-card rv d2" href="#" data-tag="formal">
+        <div>
+          <div class="entry-meta"><span class="entry-tag">Formal</span><span class="entry-dot"></span><span class="entry-date">January 2025</span></div>
+          <div class="entry-title">What Does It Mean for a Material to Have a "Band Gap"?</div>
+          <div class="entry-excerpt">An honest look at how optical, transport, and photoemission measurements give different gap values — and why that's not a contradiction.</div>
+        </div>
+        <span class="entry-arrow">→</span>
+      </a>
+      <a class="entry-card rv d3" href="#" data-tag="informal">
+        <div>
+          <div class="entry-meta"><span class="entry-tag">Informal</span><span class="entry-dot"></span><span class="entry-date">November 2024</span></div>
+          <div class="entry-title">Three Months of Raman Spectroscopy: What I Wish Someone Had Told Me</div>
+          <div class="entry-excerpt">A candid lab notebook entry turned essay. On alignment, laser damage, and the moment you finally trust your own spectra.</div>
+        </div>
+        <span class="entry-arrow">→</span>
+      </a>
+      <a class="entry-card rv d4" href="#" data-tag="papers">
+        <div>
+          <div class="entry-meta"><span class="entry-tag">Papers</span><span class="entry-dot"></span><span class="entry-date">September 2024</span></div>
+          <div class="entry-title">Reading Snyder & Toberer (2008): What Has Changed and What Hasn't</div>
+          <div class="entry-excerpt">A close reading of the landmark Nature Materials review, 16 years on. The zT formula still stands; the material landscape has shifted considerably.</div>
+        </div>
+        <span class="entry-arrow">→</span>
+      </a>
+      <a class="entry-card rv d5" href="#" data-tag="informal">
+        <div>
+          <div class="entry-meta"><span class="entry-tag">Informal</span><span class="entry-dot"></span><span class="entry-date">July 2024</span></div>
+          <div class="entry-title">On Writing a Thesis in LaTeX: A Survival Guide</div>
+          <div class="entry-excerpt">Bibliography managers, TikZ figures, tcolorbox environments, and the eternal question of whether to use \input or \include.</div>
+        </div>
+        <span class="entry-arrow">→</span>
+      </a>
+      <a class="entry-card rv" href="#" data-tag="formal">
+        <div>
+          <div class="entry-meta"><span class="entry-tag">Formal</span><span class="entry-dot"></span><span class="entry-date">April 2024</span></div>
+          <div class="entry-title">Kubelka-Munk and Its Discontents: When the Transformation Fails</div>
+          <div class="entry-excerpt">A practical guide to diagnosing K-M breakdown using the Klein criterion, with worked examples from PbTe diffuse reflectance data.</div>
+        </div>
+        <span class="entry-arrow">→</span>
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ COMMENTARIES SECTION ══════════ -->
+<div class="writing-section" id="commentaries">
+  <div class="section-body">
+    <div class="filter-bar rv">
+      <span class="filter-label">Filter</span>
+      <button class="fpill active" data-filter="all">All</button>
+      <button class="fpill" data-filter="books">Books</button>
+      <button class="fpill" data-filter="papers">Papers</button>
+      <button class="fpill" data-filter="mustread">Must Read</button>
+    </div>
+
+    <div id="commentaries-list">
+
+      <!-- Commentary card structure: header + actions + inline preview -->
+      <div class="commentary-card rv d1" data-tag="mustread">
+        <div class="commentary-card-header">
+          <div>
+            <div class="entry-meta">
+              <span class="entry-tag" style="color:var(--violet)">Must Read</span>
+              <span class="entry-dot"></span>
+              <span class="entry-date">February 2025</span>
+            </div>
+            <div class="entry-title">On "The Character of Physical Law" — Feynman's Most Underrated Book</div>
+            <div class="entry-excerpt">Not the Lectures, not QED. This slim volume — transcribed from BBC talks — captures something the textbooks miss: the texture of how physicists actually think.</div>
+            <div class="star-rating-wrap">
+              <div class="stars-display" data-rating="4.5"></div>
+              <div class="star-rating-input">
+                <label>Rate:</label>
+                <input type="number" class="star-number-input" min="0" max="5" step="0.1" placeholder="e.g. 4.5">
+              </div>
+            </div>
+          </div>
+          <img class="entry-thumb" src="https://www.quantamagazine.org/wp-content/uploads/2022/12/YiR-COMMENTS-byMyriamWares-Lede-scaled.webp" alt="Commentary">
+        </div>
+        <div class="commentary-card-actions">
+          <button class="preview-btn" data-target="preview-1">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            Preview
+          </button>
+          <button class="expand-btn" data-target="preview-1">Expand</button>
+          <a href="#" target="_blank" class="open-article-btn">Open Full Article ↗</a>
+        </div>
+        <div class="commentary-preview" id="preview-1">
+          <div class="commentary-preview-text">
+            <p>Feynman delivered these lectures at Cornell in 1964, and they were broadcast by the BBC. The transcript was published as a slim book — easy to overlook next to the three-volume Lectures on Physics. That would be a mistake.</p>
+            <p>What makes <em>The Character of Physical Law</em> special is not its technical content (there is almost none) but its epistemic content. Feynman explains what it <em>feels like</em> to do physics: the provisional nature of physical laws, the interplay between mathematics and physical intuition, the strange effectiveness of symmetry arguments. These are things rarely taught explicitly, even in graduate programmes.</p>
+            <p>Rereading it mid-PhD, I was struck by how much of what Feynman describes I had absorbed implicitly without ever having it named. Chapter 6, on the relation between mathematics and physics, is worth reading every year. The discussion of what it means to "explain" something — as opposed to merely describing it — should be required reading for anyone writing a thesis.</p>
+          </div>
+          <div class="preview-footer">
+            <a href="#" target="_blank" class="open-article-btn">Open Full Article ↗</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="commentary-card rv d2" data-tag="papers">
+        <div class="commentary-card-header">
+          <div>
+            <div class="entry-meta">
+              <span class="entry-tag">Paper</span>
+              <span class="entry-dot"></span>
+              <span class="entry-date">December 2024</span>
+            </div>
+            <div class="entry-title">Klein et al. (2023): Rethinking the Kubelka-Munk Validity Condition</div>
+            <div class="entry-excerpt">Why this methodological paper should be required reading for anyone running diffuse reflectance measurements on narrow-gap semiconductors.</div>
+            <div class="star-rating-wrap">
+              <div class="stars-display" data-rating="5"></div>
+              <div class="star-rating-input">
+                <label>Rate:</label>
+                <input type="number" class="star-number-input" min="0" max="5" step="0.1" placeholder="e.g. 4.5">
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="commentary-card-actions">
+          <button class="preview-btn" data-target="preview-2">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            Preview
+          </button>
+          <button class="expand-btn" data-target="preview-2">Expand</button>
+          <a href="#" target="_blank" class="open-article-btn">Open Full Article ↗</a>
+        </div>
+        <div class="commentary-preview" id="preview-2">
+          <div class="commentary-preview-text">
+            <p>Klein et al. derive an explicit validity criterion for the Kubelka-Munk transformation: the ratio of the absorption coefficient to the scattering coefficient must be much less than one. For narrow-gap semiconductors — PbTe, SnSe, Bi₂Te₃ — this condition is frequently violated near the band edge, precisely where you are trying to extract the gap.</p>
+            <p>The practical upshot is that K-M Tauc plots in these materials can shift the apparent band edge by tens to hundreds of meV. The paper provides a diagnostic procedure: comparing the K-M Tauc plot with the direct (Tauc plot of (1−R)²) reveals whether the transformation is safe. If they diverge in slope or intercept, K-M is failing.</p>
+            <p>I have used this criterion extensively in my own work on PbTe-based alloys. The Klein diagnostic is now part of my standard UV-Vis analysis pipeline, and I report both Tauc plots when there is any ambiguity.</p>
+          </div>
+          <div class="preview-footer">
+            <a href="#" target="_blank" class="open-article-btn">Open Full Article ↗</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="commentary-card rv d3" data-tag="books">
+        <div class="commentary-card-header">
+          <div>
+            <div class="entry-meta">
+              <span class="entry-tag">Book</span>
+              <span class="entry-dot"></span>
+              <span class="entry-date">October 2024</span>
+            </div>
+            <div class="entry-title">Ashcroft & Mermin vs. Kittel: Two Views of Solid State Physics</div>
+            <div class="entry-excerpt">A comparison for graduate students: which book to read first, which to annotate, and which to reach for when you're genuinely stuck.</div>
+            <div class="star-rating-wrap">
+              <div class="stars-display" data-rating="4"></div>
+              <div class="star-rating-input">
+                <label>Rate:</label>
+                <input type="number" class="star-number-input" min="0" max="5" step="0.1" placeholder="e.g. 4.5">
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="commentary-card-actions">
+          <button class="preview-btn" data-target="preview-3">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            Preview
+          </button>
+          <button class="expand-btn" data-target="preview-3">Expand</button>
+          <a href="#" target="_blank" class="open-article-btn">Open Full Article ↗</a>
+        </div>
+        <div class="commentary-preview" id="preview-3">
+          <div class="commentary-preview-text">
+            <p>Kittel is a survey. Ashcroft & Mermin is an argument. That distinction matters more than it might seem when you are trying to develop physical intuition rather than just pass an exam.</p>
+            <p>Kittel introduces topics efficiently but rarely lingers on the <em>why</em>. A&M takes the opposite approach: it derives rather than states, and it is explicit about what assumptions are being made and when they might fail. For someone working on transport phenomena — thermoelectrics, Hall effect, magnetoresistance — A&M's treatment of the Boltzmann equation and relaxation time approximation is simply irreplaceable.</p>
+            <p>My recommendation: read Kittel first to get the landscape, then work through A&M chapter by chapter as you encounter topics in your research. Keep Kittel as a quick-reference dictionary; use A&M when you need to actually understand something.</p>
+          </div>
+          <div class="preview-footer">
+            <a href="#" target="_blank" class="open-article-btn">Open Full Article ↗</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="commentary-card rv d4" data-tag="mustread">
+        <div class="commentary-card-header">
+          <div>
+            <div class="entry-meta">
+              <span class="entry-tag" style="color:var(--violet)">Must Read</span>
+              <span class="entry-dot"></span>
+              <span class="entry-date">August 2024</span>
+            </div>
+            <div class="entry-title">Snyder & Toberer (2008) at 16: A Retrospective</div>
+            <div class="entry-excerpt">The most-cited thermoelectrics review. What it got right, what the field has corrected, and what the figure-of-merit debate still gets wrong.</div>
+            <div class="star-rating-wrap">
+              <div class="stars-display" data-rating="4.5"></div>
+              <div class="star-rating-input">
+                <label>Rate:</label>
+                <input type="number" class="star-number-input" min="0" max="5" step="0.1" placeholder="e.g. 4.5">
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="commentary-card-actions">
+          <button class="preview-btn" data-target="preview-4">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            Preview
+          </button>
+          <button class="expand-btn" data-target="preview-4">Expand</button>
+          <a href="#" target="_blank" class="open-article-btn">Open Full Article ↗</a>
+        </div>
+        <div class="commentary-preview" id="preview-4">
+          <div class="commentary-preview-text">
+            <p>Snyder & Toberer's 2008 Nature Materials review introduced the concept of the band-convergence and nanostructuring strategies to a broad audience. It is the first citation in almost every thermoelectrics paper written since. Rereading it 16 years on is instructive in several ways.</p>
+            <p>What it got right: the framework of decoupling electronic and thermal transport, the emphasis on the quality factor β, and the argument that zT > 2 was achievable without violating any fundamental constraint. What has been revised: the role of lone-pair electrons in PbTe band convergence is now better understood; the Seebeck coefficient models have been substantially refined; and the community has largely moved away from "phonon-glass electron-crystal" as an organising principle.</p>
+          </div>
+          <div class="preview-footer">
+            <a href="#" target="_blank" class="open-article-btn">Open Full Article ↗</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="commentary-card rv d5" data-tag="books">
+        <div class="commentary-card-header">
+          <div>
+            <div class="entry-meta">
+              <span class="entry-tag">Book</span>
+              <span class="entry-dot"></span>
+              <span class="entry-date">June 2024</span>
+            </div>
+            <div class="entry-title">"How to Think Like a Mathematician" — A Researcher's Retrospective</div>
+            <div class="entry-excerpt">Kevin Houston's book is aimed at undergraduates. Rereading it mid-PhD, I found it surprisingly diagnostic of the habits I'd not yet formed.</div>
+            <div class="star-rating-wrap">
+              <div class="stars-display" data-rating="3.5"></div>
+              <div class="star-rating-input">
+                <label>Rate:</label>
+                <input type="number" class="star-number-input" min="0" max="5" step="0.1" placeholder="e.g. 4.5">
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="commentary-card-actions">
+          <button class="preview-btn" data-target="preview-5">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            Preview
+          </button>
+          <button class="expand-btn" data-target="preview-5">Expand</button>
+          <a href="#" target="_blank" class="open-article-btn">Open Full Article ↗</a>
+        </div>
+        <div class="commentary-preview" id="preview-5">
+          <div class="commentary-preview-text">
+            <p>Houston's book is about mathematical proof and rigour, pitched at undergraduates encountering formal mathematics for the first time. Its relevance to experimental physics is not immediately obvious. But its central theme — learning to distinguish what you know from what you assume — is as important in the lab as in the lecture hall.</p>
+            <p>The chapter on definitions is quietly devastating: Houston points out that most errors in mathematics come not from faulty logic but from using terms without having first made precise what they mean. I recognise this failure constantly in my own writing. "Optimal carrier concentration", "dominant scattering mechanism", "band gap" — these phrases get used as if their meaning were fixed, when often it is context-dependent and under-specified.</p>
+          </div>
+          <div class="preview-footer">
+            <a href="#" target="_blank" class="open-article-btn">Open Full Article ↗</a>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ RESOURCES SECTION ══════════ -->
+<div class="writing-section" id="resources">
+  <div class="section-body">
+    <div class="filter-bar rv">
+      <span class="filter-label">Filter</span>
+      <button class="fpill active" data-filter="all">All</button>
+      <button class="fpill" data-filter="latex">LaTeX</button>
+      <button class="fpill" data-filter="software">Software</button>
+      <button class="fpill" data-filter="notes">Physics Notes</button>
+    </div>
+
+    <div class="resource-section-group rv" data-group="latex">
+      <div class="section-label">LaTeX</div>
+      <div class="resource-grid">
+        <a class="resource-card" href="https://www.pdf.com/thesis-template" target="_blank" data-tag="latex">
+          <div class="resource-icon">📄</div>
+          <div class="resource-title">PhD Thesis Template (IISER Pune)</div>
+          <div class="resource-desc">Clean LaTeX template matching the institute's formatting guidelines — tcolorbox, TikZ, and BibLaTeX pre-configured.</div>
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-top:auto;">
+            <span class="resource-badge">LaTeX · Template</span>
+            <a href="https://www.pdf.com/thesis-template" target="_blank" class="resource-pdf-link" onclick="event.stopPropagation()">
+              <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+              PDF
+            </a>
+          </div>
+        </a>
+        <a class="resource-card" href="https://www.pdf.com/tikz-collection" target="_blank" data-tag="latex">
+          <div class="resource-icon">📐</div>
+          <div class="resource-title">TikZ Figure Collection</div>
+          <div class="resource-desc">Ready-to-use TikZ source files: Raman microscopy setup, integrating sphere, XPS energy levels, and thermoelectric efficiency diagrams.</div>
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-top:auto;">
+            <span class="resource-badge">LaTeX · TikZ</span>
+            <a href="https://www.pdf.com/tikz-collection" target="_blank" class="resource-pdf-link" onclick="event.stopPropagation()">
+              <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+              PDF
+            </a>
+          </div>
+        </a>
+        <a class="resource-card" href="https://www.pdf.com/biblatex-style" target="_blank" data-tag="latex">
+          <div class="resource-icon">📚</div>
+          <div class="resource-title">BibLaTeX Style for Materials Science</div>
+          <div class="resource-desc">A .bib style that handles arXiv preprints, journal articles, and book chapters with minimal fuss. Includes a Zotero export preset.</div>
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-top:auto;">
+            <span class="resource-badge">LaTeX · Bibliography</span>
+            <a href="https://www.pdf.com/biblatex-style" target="_blank" class="resource-pdf-link" onclick="event.stopPropagation()">
+              <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+              PDF
+            </a>
+          </div>
+        </a>
+        <a class="resource-card" href="https://www.pdf.com/beamer-theme" target="_blank" data-tag="latex">
+          <div class="resource-icon">🖼️</div>
+          <div class="resource-title">Beamer Presentation Theme</div>
+          <div class="resource-desc">A minimal, publication-quality Beamer theme for conference talks. Matches the thesis template's colour palette and fonts.</div>
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-top:auto;">
+            <span class="resource-badge">LaTeX · Beamer</span>
+            <a href="https://www.pdf.com/beamer-theme" target="_blank" class="resource-pdf-link" onclick="event.stopPropagation()">
+              <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+              PDF
+            </a>
+          </div>
+        </a>
+        <a class="resource-card" href="https://www.pdf.com/tcolorbox-guide" target="_blank" data-tag="latex">
+          <div class="resource-icon">🗂️</div>
+          <div class="resource-title">tcolorbox Environments for Physics</div>
+          <div class="resource-desc">Pre-built tcolorbox styles for theorems, definitions, equations, and derivation callouts — ready to drop into any LaTeX document.</div>
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-top:auto;">
+            <span class="resource-badge">LaTeX · tcolorbox</span>
+            <a href="https://www.pdf.com/tcolorbox-guide" target="_blank" class="resource-pdf-link" onclick="event.stopPropagation()">
+              <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+              PDF
+            </a>
+          </div>
+        </a>
+      </div>
+    </div>
+
+    <div class="resource-section-group rv" data-group="software" style="margin-top:2.4rem">
+      <div class="section-label">Software</div>
+      <div class="resource-grid">
+        <a class="resource-card" href="https://www.pdf.com/python-stack" target="_blank" data-tag="software">
+          <div class="resource-icon">🐍</div>
+          <div class="resource-title">Python Data Analysis Stack</div>
+          <div class="resource-desc">My Conda environment for materials science data: NumPy, SciPy, lmfit, matplotlib with publication-quality rcParams, and pymatgen.</div>
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-top:auto;">
+            <span class="resource-badge">Software · Python</span>
+            <a href="https://www.pdf.com/python-stack" target="_blank" class="resource-pdf-link" onclick="event.stopPropagation()">
+              <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+              PDF
+            </a>
+          </div>
+        </a>
+        <a class="resource-card" href="https://www.pdf.com/origin-to-python" target="_blank" data-tag="software">
+          <div class="resource-icon">📊</div>
+          <div class="resource-title">Origin Pro → Python Migration Guide</div>
+          <div class="resource-desc">A practical walkthrough for labs transitioning from Origin to Python. Covers Tauc plots, transport data fitting, and Hall effect analysis.</div>
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-top:auto;">
+            <span class="resource-badge">Software · Guide</span>
+            <a href="https://www.pdf.com/origin-to-python" target="_blank" class="resource-pdf-link" onclick="event.stopPropagation()">
+              <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+              PDF
+            </a>
+          </div>
+        </a>
+        <a class="resource-card" href="https://www.pdf.com/casaxps-workflow" target="_blank" data-tag="software">
+          <div class="resource-icon">🔬</div>
+          <div class="resource-title">CasaXPS Workflow for Chalcogenides</div>
+          <div class="resource-desc">Step-by-step XPS fitting procedure for Pb 4f, Sn 3d, Ge 3d doublets — including Shirley background, doublet splitting, and shake-up handling.</div>
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-top:auto;">
+            <span class="resource-badge">Software · XPS</span>
+            <a href="https://www.pdf.com/casaxps-workflow" target="_blank" class="resource-pdf-link" onclick="event.stopPropagation()">
+              <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+              PDF
+            </a>
+          </div>
+        </a>
+        <a class="resource-card" href="https://www.pdf.com/raman-pipeline" target="_blank" data-tag="software">
+          <div class="resource-icon">🌊</div>
+          <div class="resource-title">Raman Data Processing Pipeline</div>
+          <div class="resource-desc">Python pipeline for baseline subtraction, peak fitting (Lorentzian/Voigt), and batch processing of Raman spectra from WiRE and LabSpec exports.</div>
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-top:auto;">
+            <span class="resource-badge">Software · Raman</span>
+            <a href="https://www.pdf.com/raman-pipeline" target="_blank" class="resource-pdf-link" onclick="event.stopPropagation()">
+              <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+              PDF
+            </a>
+          </div>
+        </a>
+        <a class="resource-card" href="https://www.pdf.com/hall-analysis" target="_blank" data-tag="software">
+          <div class="resource-icon">🧲</div>
+          <div class="resource-title">Hall Effect Analysis Notebook</div>
+          <div class="resource-desc">Jupyter notebook for van der Pauw Hall measurements: symmetry checks, carrier density and mobility extraction, and uncertainty propagation.</div>
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-top:auto;">
+            <span class="resource-badge">Software · Hall</span>
+            <a href="https://www.pdf.com/hall-analysis" target="_blank" class="resource-pdf-link" onclick="event.stopPropagation()">
+              <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+              PDF
+            </a>
+          </div>
+        </a>
+      </div>
+    </div>
+
+    <div class="resource-section-group rv" data-group="notes" style="margin-top:2.4rem">
+      <div class="section-label">Physics Notes</div>
+      <div class="resource-grid">
+        <a class="resource-card" href="https://www.pdf.com/te-transport-notes" target="_blank" data-tag="notes">
+          <div class="resource-icon">⚡</div>
+          <div class="resource-title">Thermoelectric Transport — Lecture Notes</div>
+          <div class="resource-desc">From Boltzmann transport to the thermoelectric quality factor. 42 pages, worked examples, and derivation of the Wiedemann-Franz law from first principles.</div>
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-top:auto;">
+            <span class="resource-badge">Notes · PDF</span>
+            <a href="https://www.pdf.com/te-transport-notes" target="_blank" class="resource-pdf-link" onclick="event.stopPropagation()">
+              <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+              PDF
+            </a>
+          </div>
+        </a>
+        <a class="resource-card" href="https://www.pdf.com/optical-spectroscopy-notes" target="_blank" data-tag="notes">
+          <div class="resource-icon">🔭</div>
+          <div class="resource-title">Optical Spectroscopy in Condensed Matter</div>
+          <div class="resource-desc">A self-contained introduction to UV-Vis, Raman, and FTIR for solid-state physicists. Derivation of K-M, Tauc, and Drude–Lorentz models included.</div>
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-top:auto;">
+            <span class="resource-badge">Notes · PDF</span>
+            <a href="https://www.pdf.com/optical-spectroscopy-notes" target="_blank" class="resource-pdf-link" onclick="event.stopPropagation()">
+              <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+              PDF
+            </a>
+          </div>
+        </a>
+        <a class="resource-card" href="https://www.pdf.com/point-defect-primer" target="_blank" data-tag="notes">
+          <div class="resource-icon">🧩</div>
+          <div class="resource-title">Point Defect Theory Primer</div>
+          <div class="resource-desc">Notation, formation energies, charge transition levels, and the Abeles phonon scattering parameter — for experimentalists who need the theory without the DFT machinery.</div>
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-top:auto;">
+            <span class="resource-badge">Notes · PDF</span>
+            <a href="https://www.pdf.com/point-defect-primer" target="_blank" class="resource-pdf-link" onclick="event.stopPropagation()">
+              <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+              PDF
+            </a>
+          </div>
+        </a>
+        <a class="resource-card" href="https://www.pdf.com/band-theory-notes" target="_blank" data-tag="notes">
+          <div class="resource-icon">🎶</div>
+          <div class="resource-title">Band Theory for Experimentalists</div>
+          <div class="resource-desc">Electronic band structure from a practical standpoint: reading band diagrams, interpreting DOS plots, and connecting theory to transport and optical data.</div>
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-top:auto;">
+            <span class="resource-badge">Notes · PDF</span>
+            <a href="https://www.pdf.com/band-theory-notes" target="_blank" class="resource-pdf-link" onclick="event.stopPropagation()">
+              <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+              PDF
+            </a>
+          </div>
+        </a>
+        <a class="resource-card" href="https://www.pdf.com/phonon-physics-notes" target="_blank" data-tag="notes">
+          <div class="resource-icon">📡</div>
+          <div class="resource-title">Phonon Physics and Lattice Thermal Conductivity</div>
+          <div class="resource-desc">Derivation of the Slack model, Callaway formalism, and scattering rate expressions for point defects, grain boundaries, and dislocations. Worked examples in PbTe.</div>
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-top:auto;">
+            <span class="resource-badge">Notes · PDF</span>
+            <a href="https://www.pdf.com/phonon-physics-notes" target="_blank" class="resource-pdf-link" onclick="event.stopPropagation()">
+              <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+              PDF
+            </a>
+          </div>
+        </a>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══════════ PODCAST SECTION ══════════ -->
+<div class="writing-section" id="podcast">
+  <div class="section-body">
+    <div class="filter-bar rv">
+      <span class="filter-label">Type</span>
+      <button class="fpill active" data-filter="all">All</button>
+      <button class="fpill" data-filter="recommend">Recommended</button>
+      <button class="fpill" data-filter="physics">Physics</button>
+      <button class="fpill" data-filter="science">Science</button>
+    </div>
+
+    <div class="podcast-list" id="podcast-list">
+
+      <!-- Podcast item 1 -->
+      <div class="podcast-item rv d1" data-tag="physics recommend">
+        <div class="podcast-card">
+          <img class="podcast-thumb" src="https://www.quantamagazine.org/wp-content/uploads/2022/03/Joy-of-Why-intro-illustration_2880x1620_Lede.jpg" alt="The Joy of Why">
+          <div>
+            <div class="podcast-tag">Physics · Recommend</div>
+            <div class="podcast-title">The Joy of Why — Steven Strogatz</div>
+            <div class="podcast-meta-row">
+              <span class="podcast-meta">Quanta Magazine · Ongoing</span>
+              <span class="entry-dot"></span>
+              <span class="podcast-date">Ep. 47 · Jan 2025</span>
+            </div>
+          </div>
+          <button class="podcast-play-btn" data-podcast="1" aria-label="Play">
+            <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+          </button>
+        </div>
+        <div class="podcast-player-wrap" id="player-1">
+          <div class="player-controls">
+            <button class="player-btn skip-text" data-action="back" data-podcast="1">
+              <svg viewBox="0 0 24 24"><path d="M12 5V1L7 6l5 5V7c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z"/></svg>
+              −10s
+            </button>
+            <button class="player-btn play-pause" data-action="playpause" data-podcast="1" aria-label="Play/Pause">
+              <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+            </button>
+            <button class="player-btn skip-text" data-action="forward" data-podcast="1">
+              +10s
+              <svg viewBox="0 0 24 24"><path d="M12 5V1l5 5-5 5V7c-3.31 0-6 2.69-6 6s2.69 6 6 6 6-2.69 6-6h2c0 4.42-3.58 8-8 8s-8-3.58-8-8 3.58-8 8-8z"/></svg>
+            </button>
+            <div class="player-timeline-wrap">
+              <input type="range" class="player-timeline" data-podcast="1" min="0" max="100" value="0" step="0.1">
+              <div class="player-time-labels">
+                <span class="current-time" data-podcast="1">0:00</span>
+                <span class="total-time" data-podcast="1">—</span>
+              </div>
+            </div>
+          </div>
+          <div class="player-extras">
+            <label style="font-family:'Space Mono',monospace;font-size:.65rem;color:var(--text-muted)">Speed:</label>
+            <select class="speed-select" data-podcast="1">
+              <option value="0.75">0.75×</option>
+              <option value="1" selected>1×</option>
+              <option value="1.25">1.25×</option>
+              <option value="1.5">1.5×</option>
+              <option value="2">2×</option>
+            </select>
+            <div class="volume-wrap">
+              <label>Vol:</label>
+              <input type="range" class="volume-slider" data-podcast="1" min="0" max="1" step="0.05" value="1">
+            </div>
+            <button class="transcript-toggle-btn" data-podcast="1">Show Transcript</button>
+          </div>
+          <div class="player-transcript" id="transcript-1">
+            <div class="transcript-text">
+              <p><strong>Transcript — The Joy of Why, Episode 47</strong></p>
+              <p>Steven Strogatz: Welcome to The Joy of Why. I'm Steven Strogatz, and today we're asking one of those questions that seems simple but turns out to be surprisingly deep: why is mathematics so unreasonably effective at describing the physical world?</p>
+              <p>My guest today has spent years thinking about exactly this question from the perspective of condensed matter physics. We'll talk about the Seebeck effect, about why the same equations that describe heat flow also describe electricity, and about whether the universe is fundamentally mathematical or whether mathematics is just a very good language we've invented to describe it.</p>
+              <p>Before we dive in, I want to say a word about why this question matters. Eugene Wigner wrote a famous essay in 1960 called "The Unreasonable Effectiveness of Mathematics in the Natural Sciences." He was genuinely puzzled. Why should abstract structures invented by mathematicians — often with no physical application in mind — turn out to describe nature so precisely?</p>
+              <p>The answer, if there is one, probably has something to do with symmetry. Nature seems to like symmetry. And symmetry is something mathematics is very good at capturing...</p>
+            </div>
+            <button class="transcript-full-btn" data-podcast="1">Read full transcript →</button>
+          </div>
+          <audio id="audio-1" preload="none">
+            <!-- src would be set to actual podcast URL -->
+          </audio>
+        </div>
+      </div>
+
+      <!-- Podcast item 2 -->
+      <div class="podcast-item rv d2" data-tag="science recommend">
+        <div class="podcast-card">
+          <img class="podcast-thumb" src="https://www.quantamagazine.org/wp-content/uploads/2023/10/QuantifyingQuantumness-byPeterGreenwood-Lede-scaled.webp" alt="Quanta Magazine Podcast">
+          <div>
+            <div class="podcast-tag">Science · Recommend</div>
+            <div class="podcast-title">The Quanta Magazine Podcast</div>
+            <div class="podcast-meta-row">
+              <span class="podcast-meta">Quanta Magazine · Weekly</span>
+              <span class="entry-dot"></span>
+              <span class="podcast-date">Ep. 112 · Feb 2025</span>
+            </div>
+          </div>
+          <button class="podcast-play-btn" data-podcast="2" aria-label="Play">
+            <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+          </button>
+        </div>
+        <div class="podcast-player-wrap" id="player-2">
+          <div class="player-controls">
+            <button class="player-btn skip-text" data-action="back" data-podcast="2">
+              <svg viewBox="0 0 24 24"><path d="M12 5V1L7 6l5 5V7c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z"/></svg>
+              −10s
+            </button>
+            <button class="player-btn play-pause" data-action="playpause" data-podcast="2" aria-label="Play/Pause">
+              <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+            </button>
+            <button class="player-btn skip-text" data-action="forward" data-podcast="2">
+              +10s
+              <svg viewBox="0 0 24 24"><path d="M12 5V1l5 5-5 5V7c-3.31 0-6 2.69-6 6s2.69 6 6 6 6-2.69 6-6h2c0 4.42-3.58 8-8 8s-8-3.58-8-8 3.58-8 8-8z"/></svg>
+            </button>
+            <div class="player-timeline-wrap">
+              <input type="range" class="player-timeline" data-podcast="2" min="0" max="100" value="0" step="0.1">
+              <div class="player-time-labels">
+                <span class="current-time" data-podcast="2">0:00</span>
+                <span class="total-time" data-podcast="2">—</span>
+              </div>
+            </div>
+          </div>
+          <div class="player-extras">
+            <label style="font-family:'Space Mono',monospace;font-size:.65rem;color:var(--text-muted)">Speed:</label>
+            <select class="speed-select" data-podcast="2">
+              <option value="0.75">0.75×</option>
+              <option value="1" selected>1×</option>
+              <option value="1.25">1.25×</option>
+              <option value="1.5">1.5×</option>
+              <option value="2">2×</option>
+            </select>
+            <div class="volume-wrap">
+              <label>Vol:</label>
+              <input type="range" class="volume-slider" data-podcast="2" min="0" max="1" step="0.05" value="1">
+            </div>
+            <button class="transcript-toggle-btn" data-podcast="2">Show Transcript</button>
+          </div>
+          <div class="player-transcript" id="transcript-2">
+            <div class="transcript-text">
+              <p><strong>Transcript — Quanta Magazine Podcast, Episode 112</strong></p>
+              <p>Host: This week on the Quanta Magazine Podcast, we explore the new physics emerging from twisted sheets of carbon — bilayer graphene — and what it tells us about superconductivity, magnetism, and the strange world of strongly correlated electrons.</p>
+              <p>When you stack two sheets of graphene and twist them by just 1.1 degrees — the so-called magic angle — something extraordinary happens. The electrons slow down. Their effective mass becomes enormous. And when that happens, electron-electron interactions start to dominate, producing phases of matter that wouldn't exist in ordinary metals...</p>
+            </div>
+            <button class="transcript-full-btn" data-podcast="2">Read full transcript →</button>
+          </div>
+          <audio id="audio-2" preload="none"></audio>
+        </div>
+      </div>
+
+      <!-- Podcast item 3 -->
+      <div class="podcast-item rv d3" data-tag="physics">
+        <div class="podcast-card">
+          <img class="podcast-thumb" src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a7/Camponotus_flavomarginatus_ant.jpg/200px-Camponotus_flavomarginatus_ant.jpg" alt="Sean Carroll Mindscape" style="object-position:center">
+          <div>
+            <div class="podcast-tag">Physics</div>
+            <div class="podcast-title">Mindscape — Sean Carroll</div>
+            <div class="podcast-meta-row">
+              <span class="podcast-meta">Self-published · Weekly</span>
+              <span class="entry-dot"></span>
+              <span class="podcast-date">Ep. 298 · Mar 2025</span>
+            </div>
+          </div>
+          <button class="podcast-play-btn" data-podcast="3" aria-label="Play">
+            <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+          </button>
+        </div>
+        <div class="podcast-player-wrap" id="player-3">
+          <div class="player-controls">
+            <button class="player-btn skip-text" data-action="back" data-podcast="3">
+              <svg viewBox="0 0 24 24"><path d="M12 5V1L7 6l5 5V7c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z"/></svg>
+              −10s
+            </button>
+            <button class="player-btn play-pause" data-action="playpause" data-podcast="3" aria-label="Play/Pause">
+              <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+            </button>
+            <button class="player-btn skip-text" data-action="forward" data-podcast="3">
+              +10s
+              <svg viewBox="0 0 24 24"><path d="M12 5V1l5 5-5 5V7c-3.31 0-6 2.69-6 6s2.69 6 6 6 6-2.69 6-6h2c0 4.42-3.58 8-8 8s-8-3.58-8-8 3.58-8 8-8z"/></svg>
+            </button>
+            <div class="player-timeline-wrap">
+              <input type="range" class="player-timeline" data-podcast="3" min="0" max="100" value="0" step="0.1">
+              <div class="player-time-labels">
+                <span class="current-time" data-podcast="3">0:00</span>
+                <span class="total-time" data-podcast="3">—</span>
+              </div>
+            </div>
+          </div>
+          <div class="player-extras">
+            <label style="font-family:'Space Mono',monospace;font-size:.65rem;color:var(--text-muted)">Speed:</label>
+            <select class="speed-select" data-podcast="3">
+              <option value="0.75">0.75×</option>
+              <option value="1" selected>1×</option>
+              <option value="1.25">1.25×</option>
+              <option value="1.5">1.5×</option>
+              <option value="2">2×</option>
+            </select>
+            <div class="volume-wrap">
+              <label>Vol:</label>
+              <input type="range" class="volume-slider" data-podcast="3" min="0" max="1" step="0.05" value="1">
+            </div>
+            <button class="transcript-toggle-btn" data-podcast="3">Show Transcript</button>
+          </div>
+          <div class="player-transcript" id="transcript-3">
+            <div class="transcript-text">
+              <p><strong>Transcript — Mindscape, Episode 298</strong></p>
+              <p>Sean Carroll: Hello everyone, welcome to the Mindscape podcast. I'm your host, Sean Carroll. Today we're going to be talking about one of my favourite topics: the arrow of time. Why does time flow in one direction? Why do we remember the past but not the future? And what does entropy have to do with it?</p>
+              <p>My guest today is a statistical physicist who has spent years thinking about the foundations of thermodynamics and its connection to quantum mechanics. We'll talk about Boltzmann, about Maxwell's demon, and about whether the second law of thermodynamics is truly fundamental or merely emergent...</p>
+            </div>
+            <button class="transcript-full-btn" data-podcast="3">Read full transcript →</button>
+          </div>
+          <audio id="audio-3" preload="none"></audio>
+        </div>
+      </div>
+
+      <!-- Podcast item 4 -->
+      <div class="podcast-item rv d4" data-tag="science">
+        <div class="podcast-card">
+          <img class="podcast-thumb" src="https://www.quantamagazine.org/wp-content/uploads/2026/02/Brain-Cartography-cr.Irena-Gajic-HP-scaled.webp" alt="Radiolab">
+          <div>
+            <div class="podcast-tag">Science</div>
+            <div class="podcast-title">Radiolab</div>
+            <div class="podcast-meta-row">
+              <span class="podcast-meta">WNYC Studios · Bi-weekly</span>
+              <span class="entry-dot"></span>
+              <span class="podcast-date">Vol. 23 · Dec 2024</span>
+            </div>
+          </div>
+          <button class="podcast-play-btn" data-podcast="4" aria-label="Play">
+            <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+          </button>
+        </div>
+        <div class="podcast-player-wrap" id="player-4">
+          <div class="player-controls">
+            <button class="player-btn skip-text" data-action="back" data-podcast="4">
+              <svg viewBox="0 0 24 24"><path d="M12 5V1L7 6l5 5V7c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z"/></svg>
+              −10s
+            </button>
+            <button class="player-btn play-pause" data-action="playpause" data-podcast="4" aria-label="Play/Pause">
+              <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+            </button>
+            <button class="player-btn skip-text" data-action="forward" data-podcast="4">
+              +10s
+              <svg viewBox="0 0 24 24"><path d="M12 5V1l5 5-5 5V7c-3.31 0-6 2.69-6 6s2.69 6 6 6 6-2.69 6-6h2c0 4.42-3.58 8-8 8s-8-3.58-8-8 3.58-8 8-8z"/></svg>
+            </button>
+            <div class="player-timeline-wrap">
+              <input type="range" class="player-timeline" data-podcast="4" min="0" max="100" value="0" step="0.1">
+              <div class="player-time-labels">
+                <span class="current-time" data-podcast="4">0:00</span>
+                <span class="total-time" data-podcast="4">—</span>
+              </div>
+            </div>
+          </div>
+          <div class="player-extras">
+            <label style="font-family:'Space Mono',monospace;font-size:.65rem;color:var(--text-muted)">Speed:</label>
+            <select class="speed-select" data-podcast="4">
+              <option value="0.75">0.75×</option>
+              <option value="1" selected>1×</option>
+              <option value="1.25">1.25×</option>
+              <option value="1.5">1.5×</option>
+              <option value="2">2×</option>
+            </select>
+            <div class="volume-wrap">
+              <label>Vol:</label>
+              <input type="range" class="volume-slider" data-podcast="4" min="0" max="1" step="0.05" value="1">
+            </div>
+            <button class="transcript-toggle-btn" data-podcast="4">Show Transcript</button>
+          </div>
+          <div class="player-transcript" id="transcript-4">
+            <div class="transcript-text">
+              <p><strong>Transcript — Radiolab</strong></p>
+              <p>Radiolab explores the intersection of science, philosophy, and human experience. This episode investigates how the brain constructs maps of the world around us — and what happens when those maps go wrong.</p>
+              <p>From the grid cells in your hippocampus to the cognitive maps used by navigating insects, the episode weaves together neuroscience, field biology, and personal stories to examine what it means to know where you are...</p>
+            </div>
+            <button class="transcript-full-btn" data-podcast="4">Read full transcript →</button>
+          </div>
+          <audio id="audio-4" preload="none"></audio>
+        </div>
+      </div>
+
+      <!-- Podcast item 5 -->
+      <div class="podcast-item rv d5" data-tag="physics recommend">
+        <div class="podcast-card">
+          <img class="podcast-thumb" src="https://www.quantamagazine.org/wp-content/uploads/2022/12/YiR-COMMENTS-byMyriamWares-Lede-scaled.webp" alt="The Titanium Physicists">
+          <div>
+            <div class="podcast-tag">Physics · Recommend</div>
+            <div class="podcast-title">The Titanium Physicists Podcast</div>
+            <div class="podcast-meta-row">
+              <span class="podcast-meta">Ben Tippett · Irregular</span>
+              <span class="entry-dot"></span>
+              <span class="podcast-date">Ep. 91 · Oct 2024</span>
+            </div>
+          </div>
+          <button class="podcast-play-btn" data-podcast="5" aria-label="Play">
+            <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+          </button>
+        </div>
+        <div class="podcast-player-wrap" id="player-5">
+          <div class="player-controls">
+            <button class="player-btn skip-text" data-action="back" data-podcast="5">
+              <svg viewBox="0 0 24 24"><path d="M12 5V1L7 6l5 5V7c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z"/></svg>
+              −10s
+            </button>
+            <button class="player-btn play-pause" data-action="playpause" data-podcast="5" aria-label="Play/Pause">
+              <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+            </button>
+            <button class="player-btn skip-text" data-action="forward" data-podcast="5">
+              +10s
+              <svg viewBox="0 0 24 24"><path d="M12 5V1l5 5-5 5V7c-3.31 0-6 2.69-6 6s2.69 6 6 6 6-2.69 6-6h2c0 4.42-3.58 8-8 8s-8-3.58-8-8 3.58-8 8-8z"/></svg>
+            </button>
+            <div class="player-timeline-wrap">
+              <input type="range" class="player-timeline" data-podcast="5" min="0" max="100" value="0" step="0.1">
+              <div class="player-time-labels">
+                <span class="current-time" data-podcast="5">0:00</span>
+                <span class="total-time" data-podcast="5">—</span>
+              </div>
+            </div>
+          </div>
+          <div class="player-extras">
+            <label style="font-family:'Space Mono',monospace;font-size:.65rem;color:var(--text-muted)">Speed:</label>
+            <select class="speed-select" data-podcast="5">
+              <option value="0.75">0.75×</option>
+              <option value="1" selected>1×</option>
+              <option value="1.25">1.25×</option>
+              <option value="1.5">1.5×</option>
+              <option value="2">2×</option>
+            </select>
+            <div class="volume-wrap">
+              <label>Vol:</label>
+              <input type="range" class="volume-slider" data-podcast="5" min="0" max="1" step="0.05" value="1">
+            </div>
+            <button class="transcript-toggle-btn" data-podcast="5">Show Transcript</button>
+          </div>
+          <div class="player-transcript" id="transcript-5">
+            <div class="transcript-text">
+              <p><strong>Transcript — The Titanium Physicists Podcast, Episode 91</strong></p>
+              <p>Ben Tippett: Welcome to the Titanium Physicists. I'm Ben Tippett. Our goal in every episode is to explain a difficult idea in physics to a non-physicist guest — in real time, without hand-waving, until they genuinely understand it.</p>
+              <p>Today we're tackling quantum entanglement. Not the popular-science version, not "spooky action at a distance" without explanation, but the actual mathematical structure of entangled states — what it means for two particles to share a quantum state, why measuring one affects the other, and what Bell's theorem actually rules out...</p>
+            </div>
+            <button class="transcript-full-btn" data-podcast="5">Read full transcript →</button>
+          </div>
+          <audio id="audio-5" preload="none"></audio>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- BOTTOM MAIN NAV -->
+<ul class="main-nav" id="main-nav-wrapper" role="navigation">
+  <div class="nav-slider" id="nav-slider" aria-hidden="true"></div>
+  <li><a href="index.html" data-nav="home"><svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg></a></li>
+  <li><a href="research.html" data-nav="research">Research</a></li>
+  <li><a href="writing.html" data-nav="writing">Writing</a></li>
+  <li><a href="about.html" data-nav="about">About</a></li>
+</ul>
+
+<!-- FOOTER -->
+<div class="black-pill" aria-hidden="true"></div>
+<div class="footer-paper-layer" aria-hidden="true"></div>
+<footer class="site-footer">
+  <div class="site-footer-inner">
+    <div>
+      <div class="site-footer-mark">Abhiram</div>
+      <p class="site-footer-tagline">Design better scientific communication with clear writing, rigorous ideas, and practical study resources.</p>
+    </div>
+    <div class="site-footer-nav">
+      <div class="site-footer-nav-col">
+        <a href="index.html">Home</a>
+        <a href="research.html">Research</a>
+        <a href="writing.html">Writing</a>
+        <a href="about.html">About</a>
+      </div>
+      <div class="site-footer-nav-col">
+        <a href="mailto:kurapati.srinivasa_abhiram@students.iiserpune.ac.in">Contact</a>
+        <a href="https://x.com" target="_blank" rel="noreferrer">X (Twitter)</a>
+        <a href="https://linkedin.com" target="_blank" rel="noreferrer">LinkedIn</a>
+      </div>
+    </div>
+    <p class="site-footer-copy">© Abhiram 2018–2026. All rights reserved</p>
+  </div>
+</footer>
+
+<!-- CONTACT MODAL -->
+<div class="modal-overlay" id="contactModal">
+  <div class="liquid-glass-bg"></div>
+  <button class="close-btn-modal" id="closeBtn">&times;</button>
+  <div style="position:relative;z-index:10;width:95%;max-width:1400px;height:90vh;display:flex;flex-direction:column;padding:60px 40px;color:var(--text-main);">
+    <div class="contact-headline-wrap">
+      <div style="font-size:.7rem;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,0.5);font-weight:700;margin-bottom:14px;">LET'S TALK</div>
+      <h1 style="font-size:clamp(2.5rem,8vw,4rem);font-weight:700;line-height:1.1;margin:0;color:var(--text-main);">Welcome! It's great to meet you.</h1>
+    </div>
+    <div class="contact-rows contact-schematic">
+      <div class="contact-option top-pill" data-mailto="mailto:kurapati.srinivasa_abhiram@students.iiserpune.ac.in?subject=Research%20Collaboration" style="background:rgba(255,255,255,0.07);backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,0.1);border-radius:20px;padding:34px;cursor:pointer;transition:all .4s cubic-bezier(0.34,1.56,0.64,1);position:relative;overflow:hidden;grid-area:collab;">
+        <div style="font-size:.8rem;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.5);font-weight:700;margin-bottom:15px;">● COLLABORATION</div>
+        <p style="font-size:1.3rem;color:var(--text-main);font-weight:500;margin:0;line-height:1.4;">I'm interested in working together.</p>
+        <div class="c-arrow" style="font-size:1.8rem;margin-top:15px;opacity:0.6;">→</div>
+      </div>
+      <div class="contact-option top-pill" data-mailto="mailto:kurapati.srinivasa_abhiram@students.iiserpune.ac.in?subject=Hiring%20Inquiry" style="background:rgba(255,255,255,0.07);backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,0.1);border-radius:20px;padding:34px;cursor:pointer;transition:all .4s cubic-bezier(0.34,1.56,0.64,1);position:relative;overflow:hidden;grid-area:hiring;">
+        <div style="font-size:.8rem;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.5);font-weight:700;margin-bottom:15px;">● HIRING</div>
+        <p style="font-size:1.3rem;color:var(--text-main);font-weight:500;margin:0;line-height:1.4;">I'd like to join the team.</p>
+        <div class="c-arrow" style="font-size:1.8rem;margin-top:15px;opacity:0.6;">→</div>
+      </div>
+      <div class="contact-option figure-block" data-mailto="mailto:kurapati.srinivasa_abhiram@students.iiserpune.ac.in?subject=Hi" style="grid-area:figure;background:rgba(255,255,255,0.07);backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,0.1);border-radius:20px;cursor:pointer;">
+        <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=700&h=700&fit=crop" alt="Profile" style="width:auto;height:100%;min-width:330px;display:block;margin-left:auto;object-fit:cover;object-position:right top;">
+        <div class="figure-overlay"></div>
+        <div class="figure-content">
+          <div class="c-eyebrow">● ANYTHING ELSE</div>
+          <p class="c-copy">Just say hi / let's just talk.</p>
+          <div class="c-arrow">→</div>
+        </div>
+      </div>
+      <div class="mini-actions" style="grid-area:actions;">
+        <div class="c-btn email-btn">
+          <div class="c-lbl">EMAIL</div>
+          <div class="c-val">kurapati.srinivasa_abhiram@students.iiserpune.ac.in</div>
+        </div>
+        <div class="mini-row">
+          <div class="c-btn wa-btn"><div class="c-lbl">WHATSAPP</div><div class="c-val">+91-9876543210</div></div>
+          <div class="c-btn ig-btn"><div class="c-lbl">INSTAGRAM</div><div class="c-val">@abhiram</div></div>
+        </div>
+        <div class="mini-row">
+          <div class="c-btn sl-btn"><div class="c-lbl">SLACK</div><div class="c-val">abhiram-workspace</div></div>
+          <div class="c-btn li-btn"><div class="c-lbl">LINKEDIN</div><div class="c-val">/in/abhiram</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FULL TRANSCRIPT MODAL -->
+<div class="transcript-modal" id="transcriptModal">
+  <div class="transcript-modal-bg" id="transcriptModalBg"></div>
+  <div class="transcript-modal-box">
+    <button class="transcript-modal-close" id="transcriptModalClose">&times;</button>
+    <div class="transcript-modal-title" id="transcriptModalTitle">Full Transcript</div>
+    <div class="transcript-modal-body" id="transcriptModalBody"></div>
+  </div>
+</div>
+
+<script>
+// ── Cursor ──
+const cur = document.getElementById('cur');
+document.addEventListener('mousemove', e => { cur.style.left = e.clientX + 'px'; cur.style.top = e.clientY + 'px'; });
+document.querySelectorAll('a, button, .resource-card, .podcast-card, .commentary-card, .entry-card, .fpill, .c-btn, .speed-select').forEach(el => {
+  el.addEventListener('mouseenter', () => cur.classList.add('big'));
+  el.addEventListener('mouseleave', () => cur.classList.remove('big'));
+});
+
+// ── Theme toggle ──
+const themeBtn = document.getElementById('themeBtn');
+themeBtn.addEventListener('click', () => {
+  const html = document.documentElement;
+  const next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+  html.setAttribute('data-theme', next);
+  localStorage.setItem('themeMode', next);
+  document.getElementById('browserThemeColor').setAttribute('content', next === 'dark' ? '#030305' : '#f4f6f9');
+  updateSubnavSlider(); updateMainNavSlider();
+});
+
+// ── Main nav slider ──
+function updateMainNavSlider() {
+  const nav = document.getElementById('main-nav-wrapper');
+  const slider = document.getElementById('nav-slider');
+  const link = nav.querySelector('[data-nav="writing"]');
+  if (!link || !slider) return;
+  const li = link.closest('li');
+  const lr = li.getBoundingClientRect(), nr = nav.getBoundingClientRect();
+  slider.style.width = lr.width + 'px';
+  slider.style.transform = `translateX(${lr.left - nr.left}px)`;
+}
+window.addEventListener('load', updateMainNavSlider);
+window.addEventListener('resize', updateMainNavSlider);
+requestAnimationFrame(updateMainNavSlider);
+
+// ── Writing sub-nav ──
+const subnavEl = document.getElementById('writing-subnav');
+const subnavSlider = document.getElementById('subnav-slider');
+const subLinks = Array.from(subnavEl.querySelectorAll('a[data-section]'));
+const sectionHeroes = {
+  blog: document.getElementById('hero-blog'),
+  commentaries: document.getElementById('hero-commentaries'),
+  resources: document.getElementById('hero-resources'),
+  podcast: document.getElementById('hero-podcast'),
+};
+const sectionPanels = {
+  blog: document.getElementById('blog'),
+  commentaries: document.getElementById('commentaries'),
+  resources: document.getElementById('resources'),
+  podcast: document.getElementById('podcast'),
+};
+let activeSection = 'blog';
+
+function updateSubnavSlider(targetLink) {
+  const link = targetLink || subnavEl.querySelector(`[data-section="${activeSection}"]`);
+  if (!link || !subnavSlider) return;
+  const li = link.closest('li');
+  const lr = li.getBoundingClientRect(), nr = subnavEl.getBoundingClientRect();
+  subnavSlider.style.width = lr.width + 'px';
+  subnavSlider.style.transform = `translateX(${lr.left - nr.left}px)`;
+}
+
+function switchSection(id) {
+  activeSection = id;
+  Object.entries(sectionHeroes).forEach(([k, el]) => { if (el) el.classList.toggle('active', k === id); });
+  Object.entries(sectionPanels).forEach(([k, el]) => { if (el) el.classList.toggle('active', k === id); });
+  subLinks.forEach(link => {
+    const isActive = link.getAttribute('data-section') === id;
+    link.classList.toggle('active-sub', isActive);
+    link.setAttribute('aria-selected', isActive ? 'true' : 'false');
+    if (isActive) updateSubnavSlider(link);
+  });
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  document.querySelectorAll(`#${id} .rv, #hero-${id} .rv`).forEach(el => {
+    el.classList.remove('in');
+    requestAnimationFrame(() => setTimeout(() => el.classList.add('in'), 60));
+  });
+}
+
+subLinks.forEach(link => {
+  link.addEventListener('click', e => {
+    e.preventDefault();
+    const sec = link.getAttribute('data-section');
+    if (sec) switchSection(sec);
+  });
+});
+
+window.addEventListener('load', () => { updateSubnavSlider(); updateMainNavSlider(); });
+window.addEventListener('resize', () => { updateSubnavSlider(); updateMainNavSlider(); });
+requestAnimationFrame(() => { updateSubnavSlider(); updateMainNavSlider(); });
+
+const hash = window.location.hash.replace('#', '');
+if (hash && sectionPanels[hash]) switchSection(hash);
+
+// ══════════ FILTER PILLS ══════════
+document.querySelectorAll('.filter-bar').forEach(bar => {
+  const pills = bar.querySelectorAll('.fpill');
+  const sectionEl = bar.closest('.writing-section');
+  const sectionId = sectionEl ? sectionEl.id : null;
+
+  pills.forEach(pill => {
+    pill.addEventListener('click', () => {
+      pills.forEach(p => p.classList.remove('active'));
+      pill.classList.add('active');
+      const filter = pill.getAttribute('data-filter');
+
+      if (sectionId === 'resources') {
+        // For resources: show/hide entire section groups (label + grid)
+        document.querySelectorAll('#resources .resource-section-group').forEach(group => {
+          const groupName = group.getAttribute('data-group');
+          if (filter === 'all') {
+            group.style.display = '';
+          } else {
+            group.style.display = (groupName === filter) ? '' : 'none';
+          }
+        });
+      } else {
+        // Blog / Commentaries
+        sectionEl.querySelectorAll('.entry-card').forEach(card => {
+          if (filter === 'all') { card.style.display = ''; return; }
+          card.style.display = (card.getAttribute('data-tag') || '').toLowerCase().includes(filter) ? '' : 'none';
+        });
+        // Commentaries cards
+        sectionEl.querySelectorAll('.commentary-card').forEach(card => {
+          if (filter === 'all') { card.style.display = ''; return; }
+          card.style.display = (card.getAttribute('data-tag') || '').toLowerCase().includes(filter) ? '' : 'none';
+        });
+        // Resource cards (non-resource section fallback)
+        sectionEl.querySelectorAll('.resource-card').forEach(card => {
+          if (filter === 'all') { card.style.display = ''; return; }
+          card.style.display = (card.getAttribute('data-tag') || '').toLowerCase().includes(filter) ? '' : 'none';
+        });
+        // Podcast items
+        sectionEl.querySelectorAll('.podcast-item').forEach(item => {
+          if (filter === 'all') { item.style.display = ''; return; }
+          item.style.display = (item.getAttribute('data-tag') || '').toLowerCase().includes(filter) ? '' : 'none';
+        });
+      }
+    });
+  });
+});
+
+// ══════════ STAR RATING ══════════
+function buildStars(container, rating) {
+  container.innerHTML = '';
+  for (let i = 1; i <= 5; i++) {
+    const fill = Math.min(1, Math.max(0, rating - (i - 1)));
+    const id = `star-grad-${container.closest('.commentary-card') ? container.closest('.commentary-card').querySelector('.entry-title').textContent.slice(0,8).replace(/\W/g,'') : Math.random().toString(36).slice(2)}-${i}`;
+    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    svg.setAttribute('viewBox', '0 0 24 24');
+    svg.classList.add('star-svg');
+    svg.innerHTML = `
+      <defs>
+        <linearGradient id="${id}" x1="0" x2="1" y1="0" y2="0">
+          <stop offset="${fill * 100}%" stop-color="var(--mint)"/>
+          <stop offset="${fill * 100}%" stop-color="var(--card-border)"/>
+        </linearGradient>
+      </defs>
+      <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"
+        fill="url(#${id})" stroke="var(--mint)" stroke-width="1.5"/>
+    `;
+    container.appendChild(svg);
+  }
+}
+
+document.querySelectorAll('.stars-display').forEach(display => {
+  const initialRating = parseFloat(display.getAttribute('data-rating')) || 0;
+  buildStars(display, initialRating);
+  const input = display.closest('.star-rating-wrap').querySelector('.star-number-input');
+  if (input) {
+    input.addEventListener('input', () => {
+      let val = parseFloat(input.value);
+      if (isNaN(val)) return;
+      val = Math.max(0, Math.min(5, val));
+      buildStars(display, val);
+      display.setAttribute('data-rating', val);
+    });
+  }
+});
+
+// ══════════ COMMENTARY INLINE EXPAND ══════════
+document.querySelectorAll('.preview-btn, .expand-btn').forEach(btn => {
+  btn.addEventListener('click', e => {
+    e.preventDefault();
+    const targetId = btn.getAttribute('data-target');
+    const preview = document.getElementById(targetId);
+    if (!preview) return;
+    const isOpen = preview.classList.contains('open');
+    // Close all others
+    document.querySelectorAll('.commentary-preview.open').forEach(p => {
+      if (p !== preview) p.classList.remove('open');
+    });
+    preview.classList.toggle('open', !isOpen);
+    // Update button labels
+    const card = btn.closest('.commentary-card');
+    if (card) {
+      const expandBtn = card.querySelector('.expand-btn');
+      if (expandBtn) expandBtn.textContent = preview.classList.contains('open') ? 'Collapse' : 'Expand';
+    }
+  });
+});
+
+// ══════════ PODCAST PLAYER ══════════
+const audioElements = {};
+
+function formatTime(sec) {
+  if (!isFinite(sec)) return '—';
+  const m = Math.floor(sec / 60);
+  const s = Math.floor(sec % 60);
+  return `${m}:${s.toString().padStart(2, '0')}`;
+}
+
+function getAudio(id) {
+  if (!audioElements[id]) {
+    audioElements[id] = document.getElementById(`audio-${id}`);
+  }
+  return audioElements[id];
+}
+
+function updatePlayBtn(id, playing) {
+  const btn = document.querySelector(`.podcast-play-btn[data-podcast="${id}"]`);
+  const ppBtn = document.querySelector(`.player-btn.play-pause[data-podcast="${id}"]`);
+  const playIcon = `<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>`;
+  const pauseIcon = `<svg viewBox="0 0 24 24"><rect x="6" y="5" width="4" height="14"/><rect x="14" y="5" width="4" height="14"/></svg>`;
+  if (btn) btn.innerHTML = playing ? pauseIcon : playIcon;
+  if (ppBtn) ppBtn.innerHTML = playing ? pauseIcon : playIcon;
+}
+
+// Play button on the card itself — opens player & plays
+document.querySelectorAll('.podcast-play-btn').forEach(btn => {
+  btn.addEventListener('click', e => {
+    e.preventDefault();
+    const id = btn.getAttribute('data-podcast');
+    const player = document.getElementById(`player-${id}`);
+    if (!player) return;
+    const audio = getAudio(id);
+    const isOpen = player.classList.contains('open');
+
+    if (!isOpen) {
+      player.classList.add('open');
+      // Attach events if not yet done
+      setupAudio(id, audio);
+      audio.play();
+      updatePlayBtn(id, true);
+    } else {
+      if (audio.paused) {
+        audio.play();
+        updatePlayBtn(id, true);
+      } else {
+        audio.pause();
+        updatePlayBtn(id, false);
+      }
+    }
+  });
+});
+
+// In-player play/pause button
+document.querySelectorAll('.player-btn.play-pause').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const id = btn.getAttribute('data-podcast');
+    const audio = getAudio(id);
+    if (!audio) return;
+    if (audio.paused) { audio.play(); updatePlayBtn(id, true); }
+    else { audio.pause(); updatePlayBtn(id, false); }
+  });
+});
+
+// Skip buttons
+document.querySelectorAll('.player-btn.skip-text').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const id = btn.getAttribute('data-podcast');
+    const action = btn.getAttribute('data-action');
+    const audio = getAudio(id);
+    if (!audio) return;
+    if (action === 'back') audio.currentTime = Math.max(0, audio.currentTime - 10);
+    if (action === 'forward') audio.currentTime = Math.min(audio.duration || audio.currentTime, audio.currentTime + 10);
+  });
+});
+
+// Timeline scrub
+document.querySelectorAll('.player-timeline').forEach(range => {
+  range.addEventListener('input', () => {
+    const id = range.getAttribute('data-podcast');
+    const audio = getAudio(id);
+    if (!audio || !audio.duration) return;
+    audio.currentTime = (parseFloat(range.value) / 100) * audio.duration;
+  });
+});
+
+// Speed
+document.querySelectorAll('.speed-select').forEach(sel => {
+  sel.addEventListener('change', () => {
+    const id = sel.getAttribute('data-podcast');
+    const audio = getAudio(id);
+    if (audio) audio.playbackRate = parseFloat(sel.value);
+  });
+});
+
+// Volume
+document.querySelectorAll('.volume-slider').forEach(vol => {
+  vol.addEventListener('input', () => {
+    const id = vol.getAttribute('data-podcast');
+    const audio = getAudio(id);
+    if (audio) audio.volume = parseFloat(vol.value);
+  });
+});
+
+function setupAudio(id, audio) {
+  if (audio._setup) return;
+  audio._setup = true;
+
+  audio.addEventListener('timeupdate', () => {
+    const range = document.querySelector(`.player-timeline[data-podcast="${id}"]`);
+    const cur = document.querySelector(`.current-time[data-podcast="${id}"]`);
+    if (range && audio.duration) range.value = (audio.currentTime / audio.duration) * 100;
+    if (cur) cur.textContent = formatTime(audio.currentTime);
+  });
+
+  audio.addEventListener('loadedmetadata', () => {
+    const tot = document.querySelector(`.total-time[data-podcast="${id}"]`);
+    if (tot) tot.textContent = formatTime(audio.duration);
+  });
+
+  audio.addEventListener('ended', () => {
+    updatePlayBtn(id, false);
+  });
+}
+
+// Transcript toggle (inside player)
+document.querySelectorAll('.transcript-toggle-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const id = btn.getAttribute('data-podcast');
+    const transcriptEl = document.getElementById(`transcript-${id}`);
+    if (!transcriptEl) return;
+    const isOpen = transcriptEl.classList.contains('open');
+    transcriptEl.classList.toggle('open', !isOpen);
+    btn.textContent = transcriptEl.classList.contains('open') ? 'Hide Transcript' : 'Show Transcript';
+  });
+});
+
+// Full transcript modal
+const transcriptModal = document.getElementById('transcriptModal');
+const transcriptModalClose = document.getElementById('transcriptModalClose');
+const transcriptModalBg = document.getElementById('transcriptModalBg');
+const transcriptModalTitle = document.getElementById('transcriptModalTitle');
+const transcriptModalBody = document.getElementById('transcriptModalBody');
+
+document.querySelectorAll('.transcript-full-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const id = btn.getAttribute('data-podcast');
+    const transcriptEl = document.getElementById(`transcript-${id}`);
+    if (!transcriptEl) return;
+    const title = document.querySelector(`.podcast-item[data-tag] .podcast-title`)?.textContent || 'Full Transcript';
+    // Get the title for this specific podcast
+    const item = btn.closest('.podcast-item');
+    const podTitle = item ? item.querySelector('.podcast-title').textContent : 'Full Transcript';
+    transcriptModalTitle.textContent = podTitle;
+    transcriptModalBody.innerHTML = transcriptEl.querySelector('.transcript-text').innerHTML;
+    transcriptModal.classList.add('open');
+    document.body.style.overflow = 'hidden';
+  });
+});
+
+transcriptModalClose.addEventListener('click', () => {
+  transcriptModal.classList.remove('open');
+  document.body.style.overflow = '';
+});
+transcriptModalBg.addEventListener('click', () => {
+  transcriptModal.classList.remove('open');
+  document.body.style.overflow = '';
+});
+
+// ── Scroll reveal ──
+const obs = new IntersectionObserver(entries =>
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('in'); }), { threshold: 0.08 });
+document.querySelectorAll('.rv').forEach(el => obs.observe(el));
+
+// ── Contact modal ──
+const modal = document.getElementById('contactModal');
+const closeBtn = document.getElementById('closeBtn');
+function openModal() {
+  modal.classList.add('active');
+  document.body.style.overflow = 'hidden';
+  document.documentElement.classList.add('modal-open');
+  const hw = modal.querySelector('.contact-headline-wrap');
+  if (hw) {
+    const r = hw.getBoundingClientRect();
+    hw.style.setProperty('--wx', `${window.innerWidth/2 - (r.left + r.width/2)}px`);
+    hw.style.setProperty('--wy', `${window.innerHeight/2 - (r.top + r.height/2)}px`);
+  }
+}
+function closeModal() {
+  modal.classList.remove('active');
+  document.body.style.overflow = '';
+  document.documentElement.classList.remove('modal-open');
+}
+document.querySelectorAll('[data-open-modal]').forEach(b => b.addEventListener('click', openModal));
+closeBtn.addEventListener('click', closeModal);
+modal.addEventListener('click', e => { if (e.target === modal) closeModal(); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeModal(); transcriptModal.classList.remove('open'); document.body.style.overflow = ''; } });
+document.querySelectorAll('.contact-option').forEach(c => {
+  c.addEventListener('click', () => { const m = c.getAttribute('data-mailto'); if (m) window.location.href = m; });
+});
+document.querySelector('.email-btn')?.addEventListener('click', () => {
+  window.location.href = 'mailto:kurapati.srinivasa_abhiram@students.iiserpune.ac.in';
+});
+document.querySelector('.wa-btn')?.addEventListener('click', () => window.open('https://wa.me/919876543210'));
+document.querySelector('.ig-btn')?.addEventListener('click', () => window.open('https://instagram.com/', '_blank'));
+document.querySelector('.sl-btn')?.addEventListener('click', () => window.open('https://slack.com/', '_blank'));
+document.querySelector('.li-btn')?.addEventListener('click', () => window.open('https://linkedin.com/', '_blank'));
+</script>
+</body>
+</html>

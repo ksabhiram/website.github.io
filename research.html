@@ -1,0 +1,1320 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#f4f6f9" id="browserThemeColor">
+<script>
+  (function () {
+    // Color pairs: [\"themeName\", { light: colors, dark: colors }]
+    const colorPairs = {
+      ocean: { light: {mint:'#0ea5e9', blue:'#06b6d4', violet:'#3b82f6'}, dark: {mint:'#0ea5e9', blue:'#06b6d4', violet:'#3b82f6'} },
+      sunset: { light: {mint:'#f97316', blue:'#fb923c', violet:'#f87171'}, dark: {mint:'#f97316', blue:'#fb923c', violet:'#f87171'} },
+      grape: { light: {mint:'#a855f7', blue:'#9333ea', violet:'#d946ef'}, dark: {mint:'#a855f7', blue:'#9333ea', violet:'#d946ef'} },
+      coral: { light: {mint:'#ff6b6b', blue:'#ff8787', violet:'#ff5252'}, dark: {mint:'#ff6b6b', blue:'#ff8787', violet:'#ff5252'} },
+      forest: { light: {mint:'#22c55e', blue:'#16a34a', violet:'#4ade80'}, dark: {mint:'#22c55e', blue:'#16a34a', violet:'#4ade80'} },
+      aurora: { light: {mint:'#34d399', blue:'#6ee7b7', violet:'#a78bfa'}, dark: {mint:'#34d399', blue:'#6ee7b7', violet:'#a78bfa'} },
+      midnight: { light: {mint:'#818cf8', blue:'#6366f1', violet:'#4f46e5'}, dark: {mint:'#818cf8', blue:'#6366f1', violet:'#4f46e5'} },
+      crimson: { light: {mint:'#c2185b', blue:'#880e4f', violet:'#6a0572'}, dark: {mint:'#f43f5e', blue:'#e11d48', violet:'#be123c'} },
+      electric: { light: {mint:'#0891b2', blue:'#0369a1', violet:'#6d28d9'}, dark: {mint:'#00fff0', blue:'#00d4ff', violet:'#7c3aed'} },
+      plasma: { light: {mint:'#e91e63', blue:'#c2185b', violet:'#7b1fa2'}, dark: {mint:'#ff00ff', blue:'#e040fb', violet:'#aa00ff'} },
+      terracotta: { light: {mint:'#ea7c4f', blue:'#d97706', violet:'#b45309'}, dark: {mint:'#ea7c4f', blue:'#d97706', violet:'#b45309'} },
+      amber: { light: {mint:'#fbbf24', blue:'#f59e0b', violet:'#d97706'}, dark: {mint:'#fbbf24', blue:'#f59e0b', violet:'#d97706'} }
+    };
+    
+    const allThemeNames = Object.keys(colorPairs);
+
+    let themeNameOnly = sessionStorage.getItem('themeName');
+    if (!themeNameOnly || !allThemeNames.includes(themeNameOnly)) {
+      themeNameOnly = 'grape';
+      sessionStorage.setItem('themeName', themeNameOnly);
+    }
+
+    const savedThemeMode = localStorage.getItem('themeMode') || 'light';
+    const activeTheme = (savedThemeMode === 'dark' || savedThemeMode === 'light') ? savedThemeMode : 'light';
+    document.documentElement.setAttribute('data-theme', activeTheme);
+    
+    // Get colors based on current theme mode
+    const colorSet = colorPairs[themeNameOnly][activeTheme];
+    document.documentElement.style.setProperty('--mint', colorSet.mint);
+    document.documentElement.style.setProperty('--blue', colorSet.blue);
+    document.documentElement.style.setProperty('--violet', colorSet.violet);
+  })();
+</script>
+<title>Research — Abhiram</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Source+Serif+4:ital,opsz,wght@0,8..60,200..900;1,8..60,200..900&family=Google+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ══════════ THEME VARIABLES ══════════ */
+:root {
+  --bg: #030305;
+  --text-main: #ffffff;
+  --text-muted: rgba(255,255,255,0.6);
+  --nav-bg: rgba(255,255,255,0.95);
+  --nav-text: #111111;
+  --card-bg: rgba(255,255,255,0.03);
+  --card-border: rgba(255,255,255,0.08);
+  --card-hover: rgba(255,255,255,0.08);
+  --tool-bg: rgba(255,255,255,0.1);
+  --mint: #00e5a0;
+  --blue: #3b3bff;
+  --violet: #6633ff;
+  --pill-h: 60px;
+  --pill-r: 999px;
+  --surface-radius: 26px;
+  --display-font: 'Source Serif 4', serif;
+}
+[data-theme="light"] {
+  --bg: #f4f6f9;
+  --text-main: #0a0a0f;
+  --text-muted: rgba(0,0,0,0.6);
+  --nav-bg: rgba(10,10,15,0.95);
+  --nav-text: #ffffff;
+  --card-bg: #ffffff;
+  --card-border: rgba(0,0,0,0.08);
+  --card-hover: #ffffff;
+  --tool-bg: rgba(0,0,0,0.08);
+}
+:root[data-color="ocean"]      { --mint:#0ea5e9; --blue:#06b6d4; --violet:#3b82f6; }
+:root[data-color="sunset"]     { --mint:#f97316; --blue:#fb923c; --violet:#f87171; }
+:root[data-color="grape"]      { --mint:#a855f7; --blue:#9333ea; --violet:#d946ef; }
+:root[data-color="coral"]      { --mint:#ff6b6b; --blue:#ff8787; --violet:#ff5252; }
+:root[data-color="forest"]     { --mint:#22c55e; --blue:#16a34a; --violet:#4ade80; }
+:root[data-color="aurora"]     { --mint:#34d399; --blue:#6ee7b7; --violet:#a78bfa; }
+:root[data-color="midnight"]   { --mint:#818cf8; --blue:#6366f1; --violet:#4f46e5; }
+:root[data-color="crimson"]    { --mint:#f43f5e; --blue:#e11d48; --violet:#be123c; }
+:root[data-color="electric"]   { --mint:#00fff0; --blue:#00d4ff; --violet:#7c3aed; }
+:root[data-color="plasma"]     { --mint:#ff00ff; --blue:#e040fb; --violet:#aa00ff; }
+:root[data-color="terracotta"] { --mint:#ea7c4f; --blue:#d97706; --violet:#b45309; }
+:root[data-color="amber"]      { --mint:#fbbf24; --blue:#f59e0b; --violet:#d97706; }
+
+/* ── Light Mode Adjustments for Neon Colors ── */
+[data-theme="light"][data-color="electric"]   { --mint:#0891b2; --blue:#0369a1; --violet:#6d28d9; }
+[data-theme="light"][data-color="plasma"]     { --mint:#e91e63; --blue:#c2185b; --violet:#7b1fa2; }
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'Google Sans', sans-serif;
+  background: var(--bg);
+  color: var(--text-main);
+  overflow-x: hidden;
+  cursor: none;
+  transition: background 0.5s ease, color 0.5s ease;
+}
+
+/* ── cursor ── */
+#cur {
+  width: 14px; height: 14px; border-radius: 50%;
+  background: var(--mint);
+  position: fixed; top: 0; left: 0;
+  pointer-events: none; z-index: 9999;
+  transform: translate(-50%,-50%);
+  mix-blend-mode: difference;
+  transition: width .18s, height .18s, background .18s;
+}
+#cur.big { width: 36px; height: 36px; background: var(--violet); }
+
+/* ══════════ TOP-LEFT LOGO ══════════ */
+.top-left-logo {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  z-index: 9500;
+  width: 53px;
+  height: 53px;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+  background: url("logo.png") center/85% no-repeat;
+  background-color: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.top-left-logo:hover { transform: scale(1.05); box-shadow: 0 6px 16px rgba(0,0,0,0.15); }
+
+/* ══════════ LET'S TALK BUTTON ══════════ */
+.top-talk-btn {
+  position: fixed;
+  top: 20px;
+  right: 24px;
+  z-index: 9450;
+  border: 1px solid var(--card-border);
+  border-radius: 999px;
+  background: var(--nav-bg);
+  color: var(--nav-text);
+  padding: 0.65rem 1.1rem;
+  font-family: 'Google Sans', sans-serif;
+  font-size: 0.92rem;
+  font-weight: 700;
+  cursor: none;
+  backdrop-filter: blur(16px);
+  transition: border-color .22s ease, color .22s ease, transform .22s ease;
+}
+.top-talk-btn:hover { border-color: var(--mint); color: var(--mint); transform: translateY(-1px); }
+html.modal-open .top-talk-btn { opacity: 0; visibility: hidden; pointer-events: none; }
+
+/* ══════════ BOTTOM MAIN NAV ══════════ */
+.styles_NavigationWrapper__VKYXQ {
+  position: fixed;
+  bottom: 24px;
+  top: auto;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  background: rgba(255,255,255,0.7);
+  backdrop-filter: blur(30px) saturate(200%);
+  -webkit-backdrop-filter: blur(30px) saturate(200%);
+  color: #000000;
+  border-radius: 999px;
+  padding: 8px 12px;
+  margin: 0;
+  list-style: none;
+  z-index: 9000;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.12), inset 0 1px 2px rgba(255,255,255,0.5);
+  border: 1px solid rgba(255,255,255,0.25);
+}
+[data-theme="dark"] .styles_NavigationWrapper__VKYXQ {
+  background: rgba(20,20,30,0.6);
+  border-color: rgba(255,255,255,0.15);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.35), inset 0 1px 2px rgba(255,255,255,0.1);
+  color: #ffffff;
+}
+.styles_NavigationWrapper__VKYXQ .nav-slider {
+  position: absolute;
+  top: 8px; bottom: 8px; left: 0;
+  border-radius: 999px;
+  background: rgba(0,0,0,0.05);
+  transition: transform 0.6s cubic-bezier(0.68,-0.55,0.265,1.55), width 0.6s cubic-bezier(0.68,-0.55,0.265,1.55);
+  z-index: 1;
+  pointer-events: none;
+}
+[data-theme="dark"] .styles_NavigationWrapper__VKYXQ .nav-slider { background: rgba(255,255,255,0.1); }
+.styles_NavigationWrapper__VKYXQ li { position: relative; z-index: 2; }
+.styles_NavigationWrapper__VKYXQ a {
+  display: block;
+  padding: 10px 20px;
+  font-family: 'Google Sans', sans-serif;
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: inherit;
+  text-decoration: none;
+  transition: color 0.2s;
+  white-space: nowrap;
+}
+.styles_NavigationWrapper__VKYXQ a svg {
+  width: 18px; height: 18px; fill: currentColor;
+  display: inline-block; vertical-align: middle;
+}
+
+/* ══════════ TOP-LEFT TOOLS ══════════ */
+.top-left-tools {
+  position: fixed; top: 20px; left: 80px;
+  display: flex; align-items: center; gap: 12px; z-index: 9300;
+}
+.tool-btn {
+  background: var(--tool-bg); backdrop-filter: blur(10px);
+  border: 1px solid var(--card-border); border-radius: 50%;
+  height: 44px; width: 44px; display: flex; align-items: center; justify-content: center; padding: 0;
+  color: var(--text-main); font-family: 'Google Sans', sans-serif; font-weight: 600; cursor: none;
+  transition: background 0.2s, border-color 0.2s, color 0.5s;
+}
+.tool-btn:hover { border-color: var(--mint); color: var(--mint); }
+.tool-btn svg { width: 18px; height: 18px; fill: currentColor; transition: transform 0.3s; }
+.theme-toggle { width: 44px; height: 44px; padding: 0; justify-content: center; position: relative; overflow: hidden; border-radius: 999px; }
+.theme-toggle .icon-wrap { position: relative; width: 28px; height: 28px; display: grid; place-items: center; }
+.theme-toggle .icon-sun,
+.theme-toggle .icon-moon {
+  position: absolute; inset: 0; width: 28px; height: 28px;
+  stroke: currentColor; fill: none;
+  transition: opacity 0.35s ease, transform 0.45s cubic-bezier(0.4,0,0.2,1);
+}
+.theme-toggle .sun-rotor { transform-origin: 12px 12px; animation: sunSpin 10s linear infinite; }
+.theme-toggle .moon-cloud { transform-origin: 16px 17px; animation: moonCloudFloat 3.2s ease-in-out infinite; }
+@keyframes sunSpin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+@keyframes moonCloudFloat { 0%, 100% { transform: translateX(0); } 50% { transform: translateX(-1.4px); } }
+html[data-theme="dark"] .theme-toggle .icon-sun { opacity: 0; transform: scale(0.7) rotate(-40deg); }
+html[data-theme="dark"] .theme-toggle .icon-moon { opacity: 1; transform: scale(1) rotate(0deg); }
+html[data-theme="light"] .theme-toggle .icon-sun { opacity: 1; transform: scale(1) rotate(0deg); }
+html[data-theme="light"] .theme-toggle .icon-moon { opacity: 0; transform: scale(0.7) rotate(30deg); }
+
+/* Search */
+.search-container { position: relative; display: flex; align-items: center; }
+.search-trigger {
+  position: absolute; left: 0; top: 0; width: 44px; height: 44px;
+  border-radius: 999px; border: 1px solid var(--card-border); background: var(--tool-bg);
+  backdrop-filter: blur(10px); display: flex; align-items: center; justify-content: center;
+  color: var(--text-main); cursor: none; z-index: 2;
+  transition: border-color .25s ease, color .25s ease;
+}
+.search-trigger:hover, .search-container:focus-within .search-trigger { border-color: var(--mint); color: var(--mint); }
+.search-input {
+  background: var(--tool-bg); backdrop-filter: blur(10px);
+  border: 1px solid var(--card-border); border-radius: 30px;
+  height: 44px; width: 44px; padding: 0 16px 0 54px;
+  color: var(--text-main); font-family: inherit; outline: none;
+  transition: width 0.4s ease, border-color 0.25s; cursor: none;
+}
+.search-input::placeholder { color: transparent; }
+.search-input:focus, .search-input:not(:placeholder-shown) { width: 200px; cursor: text; border-color: var(--mint); }
+.search-input:focus::placeholder { color: var(--text-muted); transition-delay: 0.3s; }
+.home-shortcut { display: flex; align-items: center; justify-content: center; }
+.home-shortcut svg { width: 18px; height: 18px; fill: currentColor; }
+
+/* ══════════ TOP-CENTER SUB-NAV (Publications / Projects) ══════════ */
+#research-subnav-wrapper {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9100;
+  display: flex;
+  align-items: center;
+  background: rgba(255,255,255,0.62);
+  backdrop-filter: blur(30px) saturate(200%);
+  -webkit-backdrop-filter: blur(30px) saturate(200%);
+  color: #000000;
+  border-radius: 999px;
+  padding: 7px 10px;
+  list-style: none;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.10), inset 0 1px 2px rgba(255,255,255,0.5);
+  border: 1px solid rgba(255,255,255,0.28);
+  gap: 2px;
+}
+[data-theme="dark"] #research-subnav-wrapper {
+  background: rgba(20,20,30,0.55);
+  border-color: rgba(255,255,255,0.14);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.35), inset 0 1px 2px rgba(255,255,255,0.08);
+  color: #ffffff;
+}
+#research-subnav-wrapper .subnav-slider {
+  position: absolute;
+  top: 7px; bottom: 7px; left: 0;
+  border-radius: 999px;
+  background: rgba(0,0,0,0.06);
+  transition: transform 0.55s cubic-bezier(0.68,-0.55,0.265,1.55), width 0.55s cubic-bezier(0.68,-0.55,0.265,1.55);
+  z-index: 1;
+  pointer-events: none;
+}
+[data-theme="dark"] #research-subnav-wrapper .subnav-slider { background: rgba(255,255,255,0.12); }
+#research-subnav-wrapper li {
+  position: relative;
+  z-index: 2;
+}
+#research-subnav-wrapper a {
+  display: block;
+  padding: 9px 22px;
+  font-family: 'Google Sans', sans-serif;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: inherit;
+  text-decoration: none;
+  transition: color 0.2s;
+  white-space: nowrap;
+  border-radius: 999px;
+}
+#research-subnav-wrapper a.active-sub {
+  color: var(--mint);
+}
+
+/* ══════════ PAGE HERO ══════════ */
+.page-hero {
+  padding: 130px clamp(1.5rem,6vw,6rem) 3.5rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+.page-hero-kicker {
+  display: inline-block;
+  padding: .2rem .75rem;
+  border-radius: 999px;
+  border: 1px solid var(--card-border);
+  color: var(--mint);
+  font-size: .72rem;
+  font-weight: 700;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  margin-bottom: 1rem;
+}
+.page-hero h1 {
+  font-family: var(--display-font);
+  font-size: clamp(2.4rem, 5.5vw, 4.2rem);
+  font-weight: 400;
+  line-height: 1.1;
+  letter-spacing: -1px;
+  margin-bottom: 1.2rem;
+}
+.page-hero p {
+  font-size: clamp(.95rem, 1.6vw, 1.12rem);
+  color: var(--text-muted);
+  max-width: 60ch;
+  line-height: 1.85;
+}
+
+/* ══════════ SECTION PANELS ══════════ */
+.research-section {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 clamp(1.5rem,6vw,6rem) 6rem;
+  display: none;
+}
+.research-section.active { display: block; }
+
+/* Section heading */
+.section-heading {
+  font-family: var(--display-font);
+  font-size: clamp(1.5rem,3vw,2.2rem);
+  font-weight: 400;
+  margin-bottom: 2rem;
+  color: var(--text-main);
+}
+.section-subheading {
+  font-size: .88rem;
+  color: var(--text-muted);
+  margin-top: -.8rem;
+  margin-bottom: 2.4rem;
+  line-height: 1.7;
+  max-width: 55ch;
+}
+
+/* ── Publication cards ── */
+.pub-grid { display: flex; flex-direction: column; gap: 1.4rem; }
+.pub-card {
+  padding: 2rem 2.2rem;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 20px;
+  transition: border-color .3s, transform .3s, box-shadow .3s;
+  position: relative;
+  overflow: hidden;
+}
+.pub-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 3px; height: 100%;
+  background: linear-gradient(180deg, var(--mint), var(--violet));
+  opacity: 0;
+  transition: opacity .3s;
+}
+.pub-card:hover { border-color: var(--mint); transform: translateY(-4px); box-shadow: 0 12px 40px rgba(0,0,0,0.08); }
+.pub-card:hover::before { opacity: 1; }
+.pub-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: .35rem;
+  padding: .18rem .65rem;
+  border-radius: 999px;
+  border: 1px solid var(--card-border);
+  font-family: 'Space Mono', monospace;
+  font-size: .68rem;
+  color: var(--mint);
+  margin-bottom: 1rem;
+  letter-spacing: .04em;
+}
+.pub-badge.preprint { color: var(--violet); border-color: color-mix(in srgb, var(--violet) 40%, transparent); }
+.pub-badge.published { color: var(--mint); border-color: color-mix(in srgb, var(--mint) 40%, transparent); }
+.pub-badge.review { color: #f97316; border-color: rgba(249,115,22,0.35); }
+.pub-title {
+  font-family: var(--display-font);
+  font-size: 1.18rem;
+  font-weight: 400;
+  margin-bottom: .5rem;
+  color: var(--text-main);
+  line-height: 1.45;
+}
+.pub-authors {
+  font-size: .83rem;
+  color: var(--text-muted);
+  margin-bottom: .5rem;
+  line-height: 1.6;
+}
+.pub-authors strong { color: var(--mint); font-weight: 600; }
+.pub-journal {
+  font-family: 'Space Mono', monospace;
+  font-size: .75rem;
+  color: var(--text-muted);
+  margin-bottom: 1rem;
+}
+.pub-abstract {
+  font-size: .87rem;
+  color: var(--text-muted);
+  line-height: 1.75;
+  margin-bottom: 1.2rem;
+}
+.pub-tags { display: flex; flex-wrap: wrap; gap: .5rem; }
+.pub-tag {
+  padding: .18rem .65rem;
+  border-radius: 999px;
+  background: var(--tool-bg);
+  border: 1px solid var(--card-border);
+  font-size: .72rem;
+  color: var(--text-muted);
+}
+.pub-links { display: flex; gap: .75rem; margin-top: 1.2rem; }
+.pub-link {
+  display: inline-block;
+  padding: .45rem 1.1rem;
+  border-radius: 999px;
+  border: 1px solid var(--card-border);
+  font-size: .8rem;
+  font-weight: 600;
+  color: var(--text-main);
+  text-decoration: none;
+  transition: border-color .2s, color .2s, transform .2s;
+}
+.pub-link:hover { border-color: var(--mint); color: var(--mint); transform: translateY(-1px); }
+.pub-link.primary {
+  background: linear-gradient(90deg, var(--blue), var(--violet));
+  border-color: transparent;
+  color: #fff;
+}
+.pub-link.primary:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(102,51,255,0.35); }
+
+/* ── Project cards ── */
+.proj-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 1.4rem;
+}
+.proj-card {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 20px;
+  overflow: hidden;
+  transition: border-color .3s, transform .3s, box-shadow .3s;
+  display: flex;
+  flex-direction: column;
+}
+.proj-card:hover { border-color: var(--mint); transform: translateY(-5px); box-shadow: 0 14px 48px rgba(0,0,0,0.09); }
+.proj-card-header {
+  padding: 1.8rem 1.8rem 0;
+  position: relative;
+}
+.proj-icon {
+  width: 46px; height: 46px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, var(--blue), var(--violet));
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.3rem;
+  margin-bottom: 1.1rem;
+  flex-shrink: 0;
+}
+.proj-status {
+  position: absolute; top: 1.4rem; right: 1.4rem;
+  font-size: .68rem; font-weight: 700;
+  letter-spacing: .08em; text-transform: uppercase;
+  padding: .18rem .65rem;
+  border-radius: 999px;
+  border: 1px solid;
+}
+.proj-status.ongoing { color: var(--mint); border-color: color-mix(in srgb, var(--mint) 40%, transparent); }
+.proj-status.completed { color: #94a3b8; border-color: rgba(148,163,184,0.3); }
+.proj-status.upcoming { color: #f97316; border-color: rgba(249,115,22,0.3); }
+.proj-title {
+  font-family: var(--display-font);
+  font-size: 1.08rem;
+  font-weight: 400;
+  margin-bottom: .4rem;
+  color: var(--text-main);
+}
+.proj-card-body {
+  padding: 0.6rem 1.8rem 1.8rem;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: .85rem;
+}
+.proj-desc {
+  font-size: .87rem;
+  color: var(--text-muted);
+  line-height: 1.72;
+}
+.proj-meta-row {
+  display: flex;
+  gap: .5rem;
+  flex-wrap: wrap;
+}
+.proj-tag {
+  padding: .18rem .65rem;
+  border-radius: 999px;
+  background: var(--tool-bg);
+  border: 1px solid var(--card-border);
+  font-size: .72rem;
+  color: var(--text-muted);
+}
+.proj-collaborators {
+  font-size: .8rem;
+  color: var(--text-muted);
+  line-height: 1.55;
+}
+.proj-collaborators span { color: var(--text-main); font-weight: 500; }
+.proj-progress {
+  height: 4px;
+  border-radius: 4px;
+  background: var(--card-border);
+  overflow: hidden;
+  margin-top: auto;
+}
+.proj-progress-fill {
+  height: 100%;
+  border-radius: 4px;
+  background: linear-gradient(90deg, var(--blue), var(--mint));
+  transition: width 1.2s cubic-bezier(0.22,0.61,0.36,1);
+  width: 0;
+}
+.proj-card:hover .proj-progress-fill { width: var(--prog, 0%); }
+
+/* ── Filter Pills ── */
+.filter-row {
+  display: flex;
+  gap: .65rem;
+  flex-wrap: wrap;
+  margin-bottom: 2.2rem;
+  align-items: center;
+}
+.filter-label {
+  font-size: .78rem;
+  color: var(--text-muted);
+  font-weight: 600;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+  margin-right: .3rem;
+}
+.filter-pill {
+  padding: .32rem .9rem;
+  border-radius: 999px;
+  border: 1px solid var(--card-border);
+  font-size: .8rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  background: transparent;
+  cursor: none;
+  transition: border-color .2s, color .2s, background .2s;
+  font-family: 'Google Sans', sans-serif;
+}
+.filter-pill:hover, .filter-pill.active {
+  border-color: var(--mint);
+  color: var(--mint);
+  background: color-mix(in srgb, var(--mint) 8%, transparent);
+}
+
+/* ── Stats strip ── */
+.stats-strip {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+  margin-bottom: 3.5rem;
+}
+.stat-box {
+  padding: 1.4rem 1.6rem;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 16px;
+  transition: border-color .25s, transform .25s;
+}
+.stat-box:hover { border-color: var(--mint); transform: translateY(-2px); }
+.stat-value {
+  font-family: var(--display-font);
+  font-size: 2.2rem;
+  font-weight: 400;
+  color: var(--mint);
+  line-height: 1;
+  margin-bottom: .3rem;
+}
+.stat-label {
+  font-size: .8rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+/* ── Reveal ── */
+.rv { opacity: 0; transform: translateY(28px); transition: opacity .7s, transform .7s; }
+.rv.in { opacity: 1; transform: none; }
+
+/* ══════════ FOOTER ══════════ */
+.black-pill {
+  position: relative;
+  width: min(94vw, 1328px);
+  height: 8px;
+  margin: 2.4rem auto 0;
+  background: #ffd700;
+  border-radius: 12px;
+}
+.footer-paper-layer {
+  --footer-radius: calc(var(--surface-radius) + 2px);
+  position: relative;
+  width: 100%;
+  height: 72px;
+  margin-bottom: calc(-1 * var(--footer-radius));
+  z-index: 0;
+  background:
+    radial-gradient(circle at left bottom, transparent calc(var(--footer-radius) + 1px), var(--bg) calc(var(--footer-radius) + 2px)) left bottom / 50% 100% no-repeat,
+    radial-gradient(circle at right bottom, transparent calc(var(--footer-radius) + 1px), var(--bg) calc(var(--footer-radius) + 2px)) right bottom / 50% 100% no-repeat,
+    var(--bg);
+  pointer-events: none;
+}
+.site-footer {
+  --footer-radius: calc(var(--surface-radius) + 2px);
+  position: relative;
+  width: 100%;
+  background: var(--text-main);
+  color: var(--bg);
+  border-radius: var(--footer-radius) var(--footer-radius) 0 0;
+  overflow: hidden;
+  padding: 78px 20px 112px;
+  z-index: 1;
+}
+.site-footer-inner {
+  width: min(100%, 1328px);
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 28px;
+}
+.site-footer-mark {
+  font-family: var(--display-font);
+  font-size: clamp(1.5rem, 2.2vw, 1.95rem);
+  font-weight: 400;
+}
+.site-footer-tagline { color: color-mix(in srgb, var(--bg) 72%, transparent); max-width: 36ch; line-height: 1.55; margin-top: 8px; }
+.site-footer-nav { display: grid; grid-template-columns: repeat(2, minmax(120px, 1fr)); gap: 22px 30px; margin-top: 10px; }
+.site-footer-nav-col { display: flex; flex-direction: column; gap: 10px; }
+.site-footer-nav a { color: var(--bg); text-decoration: none; font-weight: 600; transition: opacity .2s; }
+.site-footer-nav a:hover { opacity: .75; }
+.site-footer-copy { color: color-mix(in srgb, var(--bg) 66%, transparent); font-size: .86rem; }
+@media (min-width: 720px) {
+  .site-footer { padding: 84px 64px 118px; }
+  .site-footer-inner { grid-template-columns: auto minmax(auto, 376px); grid-template-rows: auto auto; column-gap: 54px; row-gap: 24px; align-items: start; }
+  .site-footer-copy { grid-column: 1 / -1; }
+}
+
+/* ══════════ CONTACT MODAL ══════════ */
+.modal-overlay {
+  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  display: none; align-items: center; justify-content: center;
+  z-index: 10000; opacity: 0; transition: opacity 0.4s ease; overflow: hidden;
+}
+.modal-overlay.active { display: flex !important; opacity: 1 !important; }
+.liquid-glass-bg {
+  position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+  background: linear-gradient(135deg, rgba(10,10,20,0.25) 0%, rgba(20,20,40,0.35) 100%);
+  backdrop-filter: blur(40px); z-index: 1;
+}
+.close-btn-modal {
+  position: fixed; top: 20px; right: 24px;
+  width: 38px; height: 38px;
+  border: 1px solid var(--card-border); background: var(--nav-bg); color: var(--nav-text);
+  font-size: 24px; cursor: pointer; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.3s ease; z-index: 9900; backdrop-filter: blur(16px);
+}
+.close-btn-modal:hover { background: rgba(255,255,255,0.15) !important; border-color: rgba(255,255,255,0.6) !important; transform: rotate(90deg); }
+.contact-headline-wrap { margin-bottom: 34px; animation: greetingAppear 1.3s cubic-bezier(0.2,0.95,0.2,1) forwards; }
+.contact-rows { opacity: 0; animation: revealRows 0.78s ease-out 1.12s forwards; }
+@keyframes greetingAppear {
+  0% { opacity: 1; transform: translate(var(--welcome-start-x,0px), var(--welcome-start-y,28vh)) scale(1.08); }
+  100% { opacity: 1; transform: translate(0,0) scale(1); }
+}
+@keyframes revealRows { 0% { opacity: 0; transform: translateY(16px); } 100% { opacity: 1; transform: translateY(0); } }
+.contact-schematic {
+  display: grid; gap: 18px;
+  grid-template-columns: repeat(2, minmax(0,1fr));
+  grid-template-areas: "collab hiring" "figure actions";
+}
+.top-pill { min-height: 200px; display: flex; flex-direction: column; justify-content: space-between; }
+.figure-single-block { height: 200px; width: 100%; justify-self: stretch; transition: all 0.4s cubic-bezier(0.34,1.56,0.64,1); }
+.anything-photo-overlay { position: absolute; inset: 0; background: linear-gradient(90deg, rgba(255,255,255,0.09) 0%, rgba(255,255,255,0.05) 100%); pointer-events: none; }
+.anything-card-content { position: absolute; inset: 0; z-index: 2; padding: 26px; display: flex; flex-direction: column; justify-content: space-between; }
+.anything-card-eyebrow { font-size: .8rem; letter-spacing: 2px; text-transform: uppercase; color: rgba(255,255,255,0.82); font-weight: 700; }
+.anything-card-copy { font-size: 1.3rem; color: var(--text-main); font-weight: 500; margin: 0; line-height: 1.4; max-width: 250px; }
+.anything-card-arrow { font-size: 1.8rem; opacity: 0.6; transition: all 0.3s ease; }
+.contact-option-large:hover { background: rgba(255,255,255,0.12) !important; border-color: rgba(255,255,255,0.25) !important; transform: translateY(-8px); box-shadow: 0 15px 50px rgba(0,0,0,0.3); }
+.contact-option-large.top-pill:hover div:last-child { opacity: 1 !important; transform: translateX(8px); }
+.figure-single-block:hover .anything-card-arrow { opacity: 1; transform: translateX(8px); }
+.anything-bottom-row { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 10px; }
+.email-btn { background: linear-gradient(120deg, rgba(66,133,244,0.28) 0%, rgba(234,67,53,0.24) 38%, rgba(251,188,5,0.23) 68%, rgba(52,168,83,0.26) 100%) !important; border-color: rgba(255,255,255,0.22) !important; }
+.email-btn:hover { background: linear-gradient(120deg,#4285f4 0%,#ea4335 38%,#fbbc05 68%,#34a853 100%) !important; border-color: rgba(255,255,255,0.62) !important; box-shadow: 0 14px 34px rgba(66,133,244,0.34) !important; transform: translateY(-2px); }
+.whatsapp-btn:hover { background: #25d366 !important; border-color: #25d366 !important; box-shadow: 0 12px 30px rgba(37,211,102,0.45) !important; transform: translateY(-2px); }
+.instagram-btn:hover { background: #e4405f !important; border-color: #e4405f !important; box-shadow: 0 12px 30px rgba(228,64,95,0.42) !important; transform: translateY(-2px); }
+.slack-btn:hover { background: #4a154b !important; border-color: #4a154b !important; box-shadow: 0 12px 30px rgba(74,21,75,0.4) !important; transform: translateY(-2px); }
+.linkedin-btn:hover { background: #0a66c2 !important; border-color: #0a66c2 !important; box-shadow: 0 12px 30px rgba(10,102,194,0.4) !important; transform: translateY(-2px); }
+.email-btn:hover div, .whatsapp-btn:hover div, .instagram-btn:hover div, .slack-btn:hover div, .linkedin-btn:hover div { color: #ffffff !important; }
+
+@media(max-width:600px){
+  .top-left-tools { top: 1rem; left: 4rem; }
+  .top-talk-btn { top: 14px; right: 14px; padding: 0.58rem 0.92rem; font-size: 0.86rem; }
+  #research-subnav-wrapper { top: 74px; }
+  .stats-strip { grid-template-columns: repeat(2,1fr); }
+  .proj-grid { grid-template-columns: 1fr; }
+  .contact-schematic { grid-template-columns: 1fr; grid-template-areas: "collab" "hiring" "figure" "actions"; }
+  .figure-single-block { width:100%; height:auto; aspect-ratio: 4/3; }
+}
+</style>
+</head>
+<body>
+
+<div id="cur"></div>
+
+<!-- TOP-LEFT LOGO -->
+<a href="index.html" class="top-left-logo" aria-label="Home"></a>
+
+<!-- TOP-LEFT UTILS -->
+<div class="top-left-tools">
+  <div class="search-container">
+    <button class="search-trigger" aria-label="Search">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+    </button>
+    <input type="text" class="search-input" placeholder="Search..." aria-label="Search">
+  </div>
+  <button class="tool-btn theme-toggle" id="themeBtn" aria-label="Toggle Light/Dark Mode">
+    <div class="icon-wrap">
+      <svg class="icon-sun" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <defs><radialGradient id="sunG" cx="50%" cy="45%" r="55%"><stop offset="0%" stop-color="#FFD37A"></stop><stop offset="40%" stop-color="#FF9A3C"></stop><stop offset="100%" stop-color="#FF6A00"></stop></radialGradient></defs>
+        <g class="sun-rotor"><circle cx="12" cy="12" r="5" fill="url(#sunG)" stroke="none"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></g>
+      </svg>
+      <svg class="icon-moon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+        <g class="moon-cloud"><ellipse cx="16" cy="17" rx="4.5" ry="2.5" fill="currentColor" opacity="0.45"></ellipse><ellipse cx="18.5" cy="16.5" rx="3" ry="2" fill="currentColor" opacity="0.5"></ellipse><ellipse cx="14" cy="18" rx="2.5" ry="1.5" fill="currentColor" opacity="0.35"></ellipse></g>
+      </svg>
+    </div>
+  </button>
+</div>
+
+<!-- TOP-CENTER SUB-NAV (Research sub-pages) -->
+<ul id="research-subnav-wrapper" role="tablist" aria-label="Research sub-sections">
+  <div class="subnav-slider" id="subnav-slider" aria-hidden="true"></div>
+  <li role="presentation"><a href="#publications" data-section="publications" role="tab" aria-selected="true" class="active-sub">Publications</a></li>
+  <li role="presentation"><a href="#projects" data-section="projects" role="tab" aria-selected="false">Projects</a></li>
+</ul>
+
+<!-- LET'S TALK -->
+<button type="button" class="top-talk-btn" data-open-contact-modal>Let's Talk</button>
+
+<!-- BOTTOM MAIN NAV -->
+<ul id="main-nav-wrapper" class="styles_NavigationWrapper__VKYXQ">
+  <div class="nav-slider" id="nav-slider" inert></div>
+  <li class="nav-item home-item"><a href="index.html" data-nav="home"><svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg></a></li>
+  <li class="nav-item"><a href="research.html" data-nav="research">Research</a></li>
+  <li class="nav-item"><a href="blog-formal.html" data-nav="writing">Writing</a></li>
+  <li class="nav-item"><a href="about.html" data-nav="about">About</a></li>
+</ul>
+
+<!-- PAGE HERO -->
+<div class="page-hero rv">
+  <span class="page-hero-kicker">Research</span>
+  <h1>Thermoelectric Materials<br>&amp; Defect Engineering</h1>
+  <p>My work explores the physics of energy conversion in thermoelectric materials — from point defect phonon scattering and alloy disorder to band convergence and transport optimisation.</p>
+</div>
+
+<!-- ══════════ PUBLICATIONS SECTION ══════════ -->
+<section id="publications" class="research-section active" role="tabpanel" aria-labelledby="tab-publications">
+
+  <!-- Stats -->
+  <div class="stats-strip rv">
+    <div class="stat-box">
+      <div class="stat-value">4</div>
+      <div class="stat-label">Published papers</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-value">2</div>
+      <div class="stat-label">Under review</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-value">3</div>
+      <div class="stat-label">Preprints</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-value">87</div>
+      <div class="stat-label">Citations</div>
+    </div>
+  </div>
+
+  <!-- Filters -->
+  <div class="filter-row rv">
+    <span class="filter-label">Filter</span>
+    <button class="filter-pill active" data-filter="all">All</button>
+    <button class="filter-pill" data-filter="thermoelectric">Thermoelectric</button>
+    <button class="filter-pill" data-filter="defects">Defect Engineering</button>
+    <button class="filter-pill" data-filter="transport">Transport</button>
+    <button class="filter-pill" data-filter="optical">Optical</button>
+  </div>
+
+  <!-- Cards -->
+  <div class="pub-grid">
+
+    <div class="pub-card rv" data-tags="thermoelectric transport">
+      <span class="pub-badge published">● Published · 2024</span>
+      <div class="pub-title">Carrier Concentration Optimisation in Pb<sub>1−x</sub>Sn<sub>x</sub>Te via Aliovalent Doping: A Combined Transport and Defect Study</div>
+      <div class="pub-authors"><strong>Kurapati S. Abhiram</strong>, Ravi Kumar, Sanjay Bhatt, et al.</div>
+      <div class="pub-journal">Journal of Materials Chemistry A, 2024, 12, 8452–8466</div>
+      <div class="pub-abstract">We present a systematic study of aliovalent doping in the PbSnTe alloy system, demonstrating that simultaneous substitution at both cation sites enables fine-grained tuning of the Fermi level position. Temperature-dependent Hall measurements and DFT supercell calculations are combined to construct a unified defect-transport model, achieving a peak zT of 1.8 at 850 K.</div>
+      <div class="pub-tags">
+        <span class="pub-tag">Thermoelectrics</span><span class="pub-tag">Aliovalent doping</span><span class="pub-tag">DFT</span><span class="pub-tag">Hall effect</span>
+      </div>
+      <div class="pub-links">
+        <a href="#" class="pub-link primary">PDF</a>
+        <a href="#" class="pub-link">DOI</a>
+        <a href="#" class="pub-link">arXiv</a>
+        <a href="#" class="pub-link">Cite</a>
+      </div>
+    </div>
+
+    <div class="pub-card rv" data-tags="defects optical">
+      <span class="pub-badge review">● Under Review · 2025</span>
+      <div class="pub-title">Kubelka-Munk Analysis of Diffuse Reflectance Spectra in Narrow-Gap Thermoelectrics: Justification via the Klein Criterion</div>
+      <div class="pub-authors"><strong>Kurapati S. Abhiram</strong>, Ananya Sharma</div>
+      <div class="pub-journal">Submitted to Physical Review Materials · 2025</div>
+      <div class="pub-abstract">Diffuse reflectance spectroscopy using an integrating sphere is widely employed to extract optical band gaps, yet the validity conditions for the Kubelka-Munk transformation are rarely stated. We derive a practical criterion following Klein et al. (2023) and benchmark it against four narrow-gap chalcogenide systems, finding significant deviation from linearity when the scattering-to-absorption ratio falls below threshold.</div>
+      <div class="pub-tags">
+        <span class="pub-tag">UV-Vis</span><span class="pub-tag">Kubelka-Munk</span><span class="pub-tag">Tauc plot</span><span class="pub-tag">Integrating sphere</span>
+      </div>
+      <div class="pub-links">
+        <a href="#" class="pub-link primary">Preprint</a>
+        <a href="#" class="pub-link">Cite</a>
+      </div>
+    </div>
+
+    <div class="pub-card rv" data-tags="thermoelectric defects">
+      <span class="pub-badge published">● Published · 2023</span>
+      <div class="pub-title">Point Defect Phonon Scattering in GeTe-Based Alloys: The Abeles Parameter and Its Experimental Verification</div>
+      <div class="pub-authors"><strong>Kurapati S. Abhiram</strong>, P. Babu, V. Subramanian, et al.</div>
+      <div class="pub-journal">Applied Physics Letters, 123, 182104 (2023)</div>
+      <div class="pub-abstract">The Abeles scattering parameter γ is extracted experimentally from thermal conductivity measurements across a composition-graded series of Ge₁₋ₓSnₓTe samples. We identify a clear crossover between mass-disorder and strain-field dominated regimes and propose an extended model that reconciles discrepancies in previously reported lattice thermal conductivities.</div>
+      <div class="pub-tags">
+        <span class="pub-tag">Phonon scattering</span><span class="pub-tag">GeTe</span><span class="pub-tag">Abeles model</span><span class="pub-tag">κ_L</span>
+      </div>
+      <div class="pub-links">
+        <a href="#" class="pub-link primary">PDF</a>
+        <a href="#" class="pub-link">DOI</a>
+        <a href="#" class="pub-link">Cite</a>
+      </div>
+    </div>
+
+    <div class="pub-card rv" data-tags="optical transport">
+      <span class="pub-badge preprint">● Preprint · 2025</span>
+      <div class="pub-title">Raman Spectroscopy as a Non-Invasive Probe of Carrier Density in Degenerate Thermoelectric Semiconductors</div>
+      <div class="pub-authors"><strong>Kurapati S. Abhiram</strong>, Leela Mohan, D. Rao</div>
+      <div class="pub-journal">arXiv:2503.14872 [cond-mat.mtrl-sci] · 2025</div>
+      <div class="pub-abstract">We demonstrate that the frequency and lineshape of the longitudinal-optic phonon–plasmon coupled mode in degenerate PbTe can be used to infer carrier concentration non-invasively. A self-consistent dielectric model incorporating free-carrier screening is fitted to temperature-dependent Raman spectra, recovering carrier densities within 15% of Hall-effect values across four decades of concentration.</div>
+      <div class="pub-tags">
+        <span class="pub-tag">Raman</span><span class="pub-tag">LOPC mode</span><span class="pub-tag">PbTe</span><span class="pub-tag">Plasmon coupling</span>
+      </div>
+      <div class="pub-links">
+        <a href="#" class="pub-link primary">arXiv</a>
+        <a href="#" class="pub-link">Cite</a>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ══════════ PROJECTS SECTION ══════════ -->
+<section id="projects" class="research-section" role="tabpanel" aria-labelledby="tab-projects">
+
+  <h2 class="section-heading rv">Research Projects</h2>
+  <p class="section-subheading rv">Active and completed experimental and computational projects spanning thermoelectric characterisation, defect modelling, and optical spectroscopy.</p>
+
+  <div class="proj-grid">
+
+    <div class="proj-card rv">
+      <div class="proj-card-header">
+        <div class="proj-icon">🔬</div>
+        <span class="proj-status ongoing">Ongoing</span>
+        <div class="proj-title">Thesis: Defect Engineering in Chalcogenide Thermoelectrics</div>
+      </div>
+      <div class="proj-card-body">
+        <p class="proj-desc">PhD dissertation covering point defect phonon scattering, alloy disorder, band convergence, and transport optimisation across Pb–Sn–Ge chalcogenide systems. Combines experimental characterisation with DFT supercell modelling.</p>
+        <div class="proj-meta-row">
+          <span class="proj-tag">PbTe</span>
+          <span class="proj-tag">GeTe</span>
+          <span class="proj-tag">DFT</span>
+          <span class="proj-tag">XPS</span>
+          <span class="proj-tag">Raman</span>
+        </div>
+        <div class="proj-collaborators">Supervisor: <span>Prof. V. Subramanian</span> · IISER Pune</div>
+        <div class="proj-progress"><div class="proj-progress-fill" style="--prog:72%"></div></div>
+      </div>
+    </div>
+
+    <div class="proj-card rv">
+      <div class="proj-card-header">
+        <div class="proj-icon">🌡️</div>
+        <span class="proj-status ongoing">Ongoing</span>
+        <div class="proj-title">UV-Vis Integrating Sphere Setup for Narrow-Gap Semiconductors</div>
+      </div>
+      <div class="proj-card-body">
+        <p class="proj-desc">Design and calibration of a diffuse reflectance measurement system for optical gap extraction in strongly absorbing thermoelectric samples. Validating applicability limits of the Kubelka-Munk/Tauc framework via the Klein criterion.</p>
+        <div class="proj-meta-row">
+          <span class="proj-tag">UV-Vis</span>
+          <span class="proj-tag">Kubelka-Munk</span>
+          <span class="proj-tag">Instrumentation</span>
+        </div>
+        <div class="proj-collaborators">Collaboration: <span>Dr. Ananya Sharma</span> · IISER Pune</div>
+        <div class="proj-progress"><div class="proj-progress-fill" style="--prog:55%"></div></div>
+      </div>
+    </div>
+
+    <div class="proj-card rv">
+      <div class="proj-card-header">
+        <div class="proj-icon">📡</div>
+        <span class="proj-status ongoing">Ongoing</span>
+        <div class="proj-title">Raman Microscopy of LOPC Modes in Degenerate PbTe</div>
+      </div>
+      <div class="proj-card-body">
+        <p class="proj-desc">Temperature-resolved confocal Raman measurements targeting the LO phonon–plasmon coupled mode as a non-invasive carrier density probe. Building a self-consistent dielectric response model for quantitative analysis.</p>
+        <div class="proj-meta-row">
+          <span class="proj-tag">Raman</span>
+          <span class="proj-tag">PbTe</span>
+          <span class="proj-tag">Plasmonics</span>
+        </div>
+        <div class="proj-collaborators">With: <span>D. Rao, L. Mohan</span></div>
+        <div class="proj-progress"><div class="proj-progress-fill" style="--prog:40%"></div></div>
+      </div>
+    </div>
+
+    <div class="proj-card rv">
+      <div class="proj-card-header">
+        <div class="proj-icon">⚛️</div>
+        <span class="proj-status completed">Completed</span>
+        <div class="proj-title">XPS Surface Analysis of Oxidised Chalcogenide Films</div>
+      </div>
+      <div class="proj-card-body">
+        <p class="proj-desc">Systematic XPS study of surface oxidation in PbTe and GeTe thin films. Characterised Pb 4f / Ge 3d doublets, shake-up satellites, and multiplet splitting to disentangle bulk from surface contributions to transport degradation.</p>
+        <div class="proj-meta-row">
+          <span class="proj-tag">XPS</span>
+          <span class="proj-tag">Surface analysis</span>
+          <span class="proj-tag">Thin films</span>
+        </div>
+        <div class="proj-collaborators">Published: <span>Appl. Phys. Lett. 2023</span></div>
+        <div class="proj-progress"><div class="proj-progress-fill" style="--prog:100%"></div></div>
+      </div>
+    </div>
+
+    <div class="proj-card rv">
+      <div class="proj-card-header">
+        <div class="proj-icon">📊</div>
+        <span class="proj-status completed">Completed</span>
+        <div class="proj-title">Thermoelectric Quality Factor (b-factor) Survey in IV-VI Alloys</div>
+      </div>
+      <div class="proj-card-body">
+        <p class="proj-desc">Computed the thermoelectric quality factor B across a library of PbTe, SnTe, GeTe, and mixed-cation alloys using measured transport data. Identified composition windows where weighted mobility and lattice thermal conductivity are simultaneously optimised.</p>
+        <div class="proj-meta-row">
+          <span class="proj-tag">zT</span>
+          <span class="proj-tag">Quality factor</span>
+          <span class="proj-tag">IV-VI</span>
+        </div>
+        <div class="proj-collaborators">Led by: <span>Kurapati S. Abhiram</span></div>
+        <div class="proj-progress"><div class="proj-progress-fill" style="--prog:100%"></div></div>
+      </div>
+    </div>
+
+    <div class="proj-card rv">
+      <div class="proj-card-header">
+        <div class="proj-icon">🔭</div>
+        <span class="proj-status upcoming">Upcoming</span>
+        <div class="proj-title">Topological Surface States in SnTe: Transport Signatures</div>
+      </div>
+      <div class="proj-card-body">
+        <p class="proj-desc">Planned investigation into topological surface conduction in SnTe films using low-temperature Hall and magnetoresistance measurements. Aims to disentangle bulk and surface carrier contributions using a two-band model.</p>
+        <div class="proj-meta-row">
+          <span class="proj-tag">Topology</span>
+          <span class="proj-tag">SnTe</span>
+          <span class="proj-tag">Magnetotransport</span>
+        </div>
+        <div class="proj-collaborators">Proposed with: <span>Prof. Ravi Kumar</span></div>
+        <div class="proj-progress"><div class="proj-progress-fill" style="--prog:8%"></div></div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- FOOTER -->
+<div class="black-pill" aria-hidden="true"></div>
+<div class="footer-paper-layer" aria-hidden="true"></div>
+<footer class="site-footer">
+  <div class="site-footer-inner">
+    <div>
+      <div class="site-footer-mark">Abhiram</div>
+      <p class="site-footer-tagline">Design better scientific communication with clear writing, rigorous ideas, and practical study resources.</p>
+    </div>
+    <div class="site-footer-nav">
+      <div class="site-footer-nav-col">
+        <a href="index.html">Home</a>
+        <a href="research.html">Research</a>
+        <a href="blog-formal.html">Writing</a>
+        <a href="about.html">About</a>
+      </div>
+      <div class="site-footer-nav-col">
+        <a href="mailto:kurapati.srinivasa_abhiram@students.iiserpune.ac.in">Contact</a>
+        <a href="https://x.com" target="_blank" rel="noreferrer">X (Twitter)</a>
+        <a href="https://linkedin.com" target="_blank" rel="noreferrer">LinkedIn</a>
+      </div>
+    </div>
+    <p class="site-footer-copy">© Abhiram 2018–2026. All rights reserved</p>
+  </div>
+</footer>
+
+<!-- CONTACT MODAL -->
+<div class="modal-overlay" id="contactModal">
+  <div class="liquid-glass-bg"></div>
+  <button class="close-btn-modal" id="closeBtn">&times;</button>
+  <div style="position:relative;z-index:10;width:95%;max-width:1400px;height:90vh;display:flex;flex-direction:column;padding:60px 40px;color:var(--text-main);">
+    <div class="contact-headline-wrap">
+      <div style="font-size:0.7rem;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,0.5);font-weight:700;margin-bottom:14px;">LET'S TALK</div>
+      <h1 style="font-size:clamp(2.5rem,8vw,4rem);font-weight:700;line-height:1.1;margin:0;color:var(--text-main);">Welcome! It's great to meet you.</h1>
+    </div>
+    <div class="contact-rows contact-schematic">
+      <div class="contact-option-large top-pill" data-mailto="mailto:kurapati.srinivasa_abhiram@students.iiserpune.ac.in?subject=Research%20Collaboration%20Interest" style="background:rgba(255,255,255,0.07);backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,0.1);border-radius:20px;padding:34px;cursor:pointer;transition:all 0.4s cubic-bezier(0.34,1.56,0.64,1);position:relative;overflow:hidden;grid-area:collab;">
+        <div style="font-size:0.8rem;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.5);font-weight:700;margin-bottom:15px;">● COLLABORATION</div>
+        <p style="font-size:1.3rem;color:var(--text-main);font-weight:500;margin:0;line-height:1.4;">I'm interested in working together.</p>
+        <div style="font-size:1.8rem;margin-top:15px;opacity:0.6;transition:all 0.3s ease;">→</div>
+      </div>
+      <div class="contact-option-large top-pill" data-mailto="mailto:kurapati.srinivasa_abhiram@students.iiserpune.ac.in?subject=Hiring%20Opportunity%20Inquiry" style="background:rgba(255,255,255,0.07);backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,0.1);border-radius:20px;padding:34px;cursor:pointer;transition:all 0.4s cubic-bezier(0.34,1.56,0.64,1);position:relative;overflow:hidden;grid-area:hiring;">
+        <div style="font-size:0.8rem;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.5);font-weight:700;margin-bottom:15px;">● HIRING</div>
+        <p style="font-size:1.3rem;color:var(--text-main);font-weight:500;margin:0;line-height:1.4;">I'd like to join the team.</p>
+        <div style="font-size:1.8rem;margin-top:15px;opacity:0.6;transition:all 0.3s ease;">→</div>
+      </div>
+      <div class="contact-option-large figure-single-block" data-mailto="mailto:kurapati.srinivasa_abhiram@students.iiserpune.ac.in?subject=Hi%20Abhiram" style="grid-area:figure;background:rgba(255,255,255,0.07);backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,0.1);border-radius:20px;overflow:hidden;position:relative;">
+        <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=700&h=700&fit=crop" alt="Profile" style="width:auto;height:100%;min-width:330px;display:block;margin-left:auto;object-fit:cover;object-position:right top;">
+        <div class="anything-photo-overlay"></div>
+        <div class="anything-card-content">
+          <div class="anything-card-eyebrow">● ANYTHING ELSE</div>
+          <p class="anything-card-copy">Just say hi / let's just talk.</p>
+          <div class="anything-card-arrow">→</div>
+        </div>
+      </div>
+      <div style="grid-area:actions;display:grid;grid-template-columns:1fr;gap:10px;align-content:start;">
+        <div class="email-btn" style="background:rgba(10,132,255,0.2);border:1px solid rgba(10,132,255,0.45);border-radius:14px;padding:12px 16px;cursor:pointer;transition:all 0.35s ease;">
+          <div style="font-size:0.66rem;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,0.72);font-weight:700;margin-bottom:6px;">EMAIL</div>
+          <div style="font-size:0.9rem;color:var(--text-main);font-weight:600;word-break:break-all;">kurapati.srinivasa_abhiram@students.iiserpune.ac.in</div>
+        </div>
+        <div class="anything-bottom-row">
+          <div class="whatsapp-btn" style="background:rgba(37,211,102,0.22);border:1px solid rgba(37,211,102,0.5);border-radius:14px;padding:12px 16px;cursor:pointer;transition:all 0.35s ease;">
+            <div style="font-size:0.66rem;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,0.72);font-weight:700;margin-bottom:6px;">WHATSAPP</div>
+            <div style="font-size:0.9rem;color:var(--text-main);font-weight:600;">+91-9876543210</div>
+          </div>
+          <div class="instagram-btn" style="background:rgba(228,64,95,0.2);border:1px solid rgba(228,64,95,0.5);border-radius:14px;padding:12px 16px;cursor:pointer;transition:all 0.35s ease;">
+            <div style="font-size:0.66rem;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,0.72);font-weight:700;margin-bottom:6px;">INSTAGRAM</div>
+            <div style="font-size:0.9rem;color:var(--text-main);font-weight:600;">@abhiram</div>
+          </div>
+        </div>
+        <div class="anything-bottom-row">
+          <div class="slack-btn" style="background:rgba(74,21,75,0.22);border:1px solid rgba(74,21,75,0.5);border-radius:14px;padding:12px 16px;cursor:pointer;transition:all 0.35s ease;">
+            <div style="font-size:0.66rem;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,0.72);font-weight:700;margin-bottom:6px;">SLACK</div>
+            <div style="font-size:0.9rem;color:var(--text-main);font-weight:600;">abhiram-workspace</div>
+          </div>
+          <div class="linkedin-btn" style="background:rgba(10,102,194,0.22);border:1px solid rgba(10,102,194,0.5);border-radius:14px;padding:12px 16px;cursor:pointer;transition:all 0.35s ease;">
+            <div style="font-size:0.66rem;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,0.72);font-weight:700;margin-bottom:6px;">LINKEDIN</div>
+            <div style="font-size:0.9rem;color:var(--text-main);font-weight:600;">/in/abhiram</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ══════════ CURSOR ══════════
+const cur = document.getElementById('cur');
+document.addEventListener('mousemove', e => {
+  cur.style.left = e.clientX + 'px';
+  cur.style.top  = e.clientY + 'px';
+});
+document.querySelectorAll('a, button, .proj-card, .pub-card, .stat-box, .filter-pill').forEach(el => {
+  el.addEventListener('mouseenter', () => cur.classList.add('big'));
+  el.addEventListener('mouseleave', () => cur.classList.remove('big'));
+});
+
+// ══════════ THEME TOGGLE ══════════
+const themeBtn = document.getElementById('themeBtn');
+const themeColorMeta = document.getElementById('browserThemeColor');
+function syncBrowserThemeColor(mode) {
+  if (themeColorMeta) themeColorMeta.setAttribute('content', mode === 'dark' ? '#030305' : '#f4f6f9');
+}
+themeBtn.addEventListener('click', () => {
+  const html = document.documentElement;
+  const next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+  html.setAttribute('data-theme', next);
+  localStorage.setItem('themeMode', next);
+  syncBrowserThemeColor(next);
+  
+  // Update colors based on new theme mode
+  const themeName = sessionStorage.getItem('themeName') || 'ocean';
+  if (colorPairs[themeName]) {
+    const colorSet = colorPairs[themeName][next];
+    document.documentElement.style.setProperty('--mint', colorSet.mint);
+    document.documentElement.style.setProperty('--blue', colorSet.blue);
+    document.documentElement.style.setProperty('--violet', colorSet.violet);
+  }
+  
+  updateSubnavSlider();
+  updateMainNavSlider();
+});
+
+// ══════════ MAIN NAV SLIDER ══════════
+function updateMainNavSlider() {
+  const navWrapper = document.getElementById('main-nav-wrapper');
+  if (!navWrapper) return;
+  const slider = document.getElementById('nav-slider');
+  // Highlight Research
+  const researchLink = navWrapper.querySelector('[data-nav="research"]');
+  if (researchLink && slider) {
+    const li = researchLink.closest('li');
+    const rect = li.getBoundingClientRect();
+    const wrapRect = navWrapper.getBoundingClientRect();
+    slider.style.width = rect.width + 'px';
+    slider.style.transform = `translateX(${rect.left - wrapRect.left}px)`;
+  }
+}
+window.addEventListener('load', updateMainNavSlider);
+window.addEventListener('resize', updateMainNavSlider);
+requestAnimationFrame(updateMainNavSlider);
+
+// ══════════ TOP-CENTER SUBNAV SLIDER ══════════
+const subnavWrapper = document.getElementById('research-subnav-wrapper');
+const subnavSlider = document.getElementById('subnav-slider');
+const subnavLinks = Array.from(subnavWrapper.querySelectorAll('a[data-section]'));
+const sections = {
+  publications: document.getElementById('publications'),
+  projects: document.getElementById('projects')
+};
+let activeSection = 'publications';
+
+function updateSubnavSlider(targetLink) {
+  const link = targetLink || subnavWrapper.querySelector(`[data-section="${activeSection}"]`);
+  if (!link || !subnavSlider) return;
+  const li = link.closest('li');
+  const rect = li.getBoundingClientRect();
+  const wrapRect = subnavWrapper.getBoundingClientRect();
+  subnavSlider.style.width = rect.width + 'px';
+  subnavSlider.style.transform = `translateX(${rect.left - wrapRect.left}px)`;
+}
+
+function switchSection(sectionId) {
+  activeSection = sectionId;
+  // Update sections
+  Object.entries(sections).forEach(([id, el]) => {
+    if (!el) return;
+    el.classList.toggle('active', id === sectionId);
+  });
+  // Update tab indicators
+  subnavLinks.forEach(link => {
+    const isActive = link.getAttribute('data-section') === sectionId;
+    link.classList.toggle('active-sub', isActive);
+    link.setAttribute('aria-selected', isActive ? 'true' : 'false');
+  });
+  updateSubnavSlider();
+  // Scroll to top of section smoothly
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+subnavLinks.forEach(link => {
+  link.addEventListener('click', e => {
+    e.preventDefault();
+    const sec = link.getAttribute('data-section');
+    if (sec) switchSection(sec);
+  });
+});
+
+window.addEventListener('load', () => {
+  updateSubnavSlider();
+  updateMainNavSlider();
+});
+window.addEventListener('resize', () => {
+  updateSubnavSlider();
+  updateMainNavSlider();
+});
+requestAnimationFrame(() => {
+  updateSubnavSlider();
+  updateMainNavSlider();
+});
+
+// Handle hash routing
+const hash = window.location.hash.replace('#', '');
+if (hash && sections[hash]) switchSection(hash);
+
+// ══════════ FILTER PILLS ══════════
+const filterPills = document.querySelectorAll('.filter-pill');
+filterPills.forEach(pill => {
+  pill.addEventListener('click', () => {
+    filterPills.forEach(p => p.classList.remove('active'));
+    pill.classList.add('active');
+    const filter = pill.getAttribute('data-filter');
+    document.querySelectorAll('.pub-card').forEach(card => {
+      if (filter === 'all') {
+        card.style.display = '';
+      } else {
+        const tags = card.getAttribute('data-tags') || '';
+        card.style.display = tags.includes(filter) ? '' : 'none';
+      }
+    });
+  });
+});
+
+// ══════════ SCROLL REVEAL ══════════
+const obs = new IntersectionObserver(entries =>
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('in'); }),
+  { threshold: 0.1 }
+);
+document.querySelectorAll('.rv').forEach(el => obs.observe(el));
+
+// ══════════ PROJECT PROGRESS ANIMATE ON SCROLL ══════════
+const projObs = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      const fill = e.target.querySelector('.proj-progress-fill');
+      if (fill) fill.style.width = fill.style.getPropertyValue('--prog') || getComputedStyle(fill).getPropertyValue('--prog');
+    }
+  });
+}, { threshold: 0.3 });
+document.querySelectorAll('.proj-card').forEach(card => projObs.observe(card));
+
+// ══════════ CONTACT MODAL ══════════
+const contactModal = document.getElementById('contactModal');
+const closeBtn = document.getElementById('closeBtn');
+
+function setWelcomeStartOffset() {
+  const hw = document.querySelector('.contact-headline-wrap');
+  if (!hw) return;
+  const rect = hw.getBoundingClientRect();
+  const cx = window.innerWidth / 2, cy = window.innerHeight / 2;
+  hw.style.setProperty('--welcome-start-x', `${cx - (rect.left + rect.width / 2)}px`);
+  hw.style.setProperty('--welcome-start-y', `${cy - (rect.top + rect.height / 2)}px`);
+}
+function openModal() {
+  contactModal.classList.add('active');
+  document.body.style.overflow = 'hidden';
+  document.documentElement.classList.add('modal-open');
+  requestAnimationFrame(setWelcomeStartOffset);
+}
+function closeModal() {
+  contactModal.classList.remove('active');
+  document.body.style.overflow = 'auto';
+  document.documentElement.classList.remove('modal-open');
+}
+document.querySelectorAll('[data-open-contact-modal]').forEach(btn => btn.addEventListener('click', openModal));
+closeBtn.addEventListener('click', closeModal);
+contactModal.addEventListener('click', e => { if (e.target === contactModal) closeModal(); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && contactModal.classList.contains('active')) closeModal(); });
+
+document.querySelectorAll('.contact-option-large').forEach(card => {
+  card.addEventListener('click', () => {
+    const mailto = card.getAttribute('data-mailto');
+    if (mailto) window.location.href = mailto;
+  });
+});
+
+document.querySelector('.email-btn')?.addEventListener('click', () => {
+  window.location.href = 'mailto:kurapati.srinivasa_abhiram@students.iiserpune.ac.in';
+});
+document.querySelector('.whatsapp-btn')?.addEventListener('click', () => window.open('https://wa.me/919876543210'));
+document.querySelector('.instagram-btn')?.addEventListener('click', () => window.open('https://instagram.com/', '_blank'));
+document.querySelector('.slack-btn')?.addEventListener('click', () => window.open('https://slack.com/', '_blank'));
+document.querySelector('.linkedin-btn')?.addEventListener('click', () => window.open('https://linkedin.com/', '_blank'));
+</script>
+</body>
+</html>
