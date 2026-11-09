@@ -1,0 +1,1530 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#030305" id="browserThemeColor">
+<script>
+  (function () {
+    const saved = localStorage.getItem('themeMode') || 'dark';
+    const active = (saved === 'dark' || saved === 'light') ? saved : 'dark';
+    document.documentElement.setAttribute('data-theme', active);
+    const meta = document.querySelector('meta[name="theme-color"]');
+    if (meta) meta.setAttribute('content', active === 'dark' ? '#030305' : '#f4f6f9');
+  })();
+</script>
+<title>Research — Abhiram</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Source+Serif+4:ital,opsz,wght@0,8..60,200..900;1,8..60,200..900&family=Google+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/style.css">
+<style>
+/* ══════════ THEME VARIABLES ══════════ */
+:root {
+  --bg: #030305;
+  --text-main: #ffffff;
+  --text-muted: rgba(255,255,255,0.6);
+  --nav-bg: rgba(255,255,255,0.95);
+  --nav-text: #111111;
+  --card-bg: rgba(255,255,255,0.03);
+  --card-border: rgba(255,255,255,0.08);
+  --card-hover: rgba(255,255,255,0.08);
+  --tool-bg: rgba(255,255,255,0.1);
+  --mint: #00f2fe;
+  --blue: #4facfe;
+  --violet: #8e2de2;
+  --pill-h: 60px;
+  --pill-r: 999px;
+  --surface-radius: 26px;
+  --display-font: 'Google Sans', sans-serif;
+}
+[data-theme="light"] {
+  --bg: #f4f6f9;
+  --text-main: #0a0a0f;
+  --text-muted: rgba(0,0,0,0.6);
+  --nav-bg: rgba(10,10,15,0.95);
+  --nav-text: #ffffff;
+  --card-bg: #ffffff;
+  --card-border: rgba(0,0,0,0.08);
+  --card-hover: #ffffff;
+  --tool-bg: rgba(0,0,0,0.08);
+  --mint: #0077b6;
+  --blue: #023e8a;
+  --violet: #5a189a;
+}
+:root[data-color="ocean"]      { --mint:#0ea5e9; --blue:#06b6d4; --violet:#3b82f6; }
+:root[data-color="sunset"]     { --mint:#f97316; --blue:#fb923c; --violet:#f87171; }
+:root[data-color="grape"]      { --mint:#a855f7; --blue:#9333ea; --violet:#d946ef; }
+:root[data-color="coral"]      { --mint:#ff6b6b; --blue:#ff8787; --violet:#ff5252; }
+:root[data-color="forest"]     { --mint:#22c55e; --blue:#16a34a; --violet:#4ade80; }
+:root[data-color="aurora"]     { --mint:#34d399; --blue:#6ee7b7; --violet:#a78bfa; }
+:root[data-color="midnight"]   { --mint:#818cf8; --blue:#6366f1; --violet:#4f46e5; }
+:root[data-color="crimson"]    { --mint:#f43f5e; --blue:#e11d48; --violet:#be123c; }
+:root[data-color="electric"]   { --mint:#00fff0; --blue:#00d4ff; --violet:#7c3aed; }
+:root[data-color="plasma"]     { --mint:#ff00ff; --blue:#e040fb; --violet:#aa00ff; }
+:root[data-color="terracotta"] { --mint:#ea7c4f; --blue:#d97706; --violet:#b45309; }
+:root[data-color="amber"]      { --mint:#fbbf24; --blue:#f59e0b; --violet:#d97706; }
+
+/* ── Light Mode Adjustments for Neon Colors ── */
+[data-theme="light"][data-color="electric"]   { --mint:#0891b2; --blue:#0369a1; --violet:#6d28d9; }
+[data-theme="light"][data-color="plasma"]     { --mint:#e91e63; --blue:#c2185b; --violet:#7b1fa2; }
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'Google Sans', sans-serif;
+  background: var(--bg);
+  color: var(--text-main);
+  overflow-x: hidden;
+  transition: background 0.5s ease, color 0.5s ease;
+}
+
+/* ── cursor ── */
+#cur {
+  width: 14px; height: 14px; border-radius: 50%;
+  background: var(--mint);
+  position: fixed; top: 0; left: 0;
+  pointer-events: none; z-index: 9999;
+  transform: translate(-50%,-50%);
+  mix-blend-mode: difference;
+  transition: width .18s, height .18s, background .18s;
+}
+#cur.big { width: 36px; height: 36px; background: var(--violet); }
+
+/* ══════════ TOP-LEFT LOGO ══════════ */
+.top-left-logo {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  z-index: 9500;
+  width: 53px;
+  height: 53px;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+  background: url("logo.png") center/85% no-repeat;
+  background-color: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.top-left-logo:hover { transform: scale(1.05); box-shadow: 0 6px 16px rgba(0,0,0,0.15); }
+
+/* ══════════ LET'S TALK BUTTON ══════════ */
+.top-talk-btn {
+  position: fixed;
+  top: 20px;
+  right: 24px;
+  z-index: 9450;
+  border: 1px solid var(--card-border);
+  border-radius: 999px;
+  background: var(--nav-bg);
+  color: var(--nav-text);
+  padding: 0.65rem 1.1rem;
+  font-family: 'Google Sans', sans-serif;
+  font-size: 0.92rem;
+  font-weight: 700;
+  backdrop-filter: blur(16px);
+  transition: border-color .22s ease, color .22s ease, transform .22s ease;
+}
+.top-talk-btn:hover { border-color: var(--mint); color: var(--mint); transform: translateY(-1px); }
+html.modal-open .top-talk-btn { opacity: 0; visibility: hidden; pointer-events: none; }
+
+/* ══════════ BOTTOM MAIN NAV ══════════ */
+.styles_NavigationWrapper__VKYXQ {
+  position: fixed;
+  bottom: 24px;
+  top: auto;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  background: rgba(255,255,255,0.7);
+  backdrop-filter: blur(30px) saturate(200%);
+  -webkit-backdrop-filter: blur(30px) saturate(200%);
+  color: #000000;
+  border-radius: 999px;
+  padding: 8px 12px;
+  margin: 0;
+  list-style: none;
+  z-index: 9000;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.12), inset 0 1px 2px rgba(255,255,255,0.5);
+  border: 1px solid rgba(255,255,255,0.25);
+}
+[data-theme="dark"] .styles_NavigationWrapper__VKYXQ {
+  background: rgba(20,20,30,0.6);
+  border-color: rgba(255,255,255,0.15);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.35), inset 0 1px 2px rgba(255,255,255,0.1);
+  color: #ffffff;
+}
+.styles_NavigationWrapper__VKYXQ .nav-slider {
+  position: absolute;
+  top: 8px; bottom: 8px; left: 0;
+  border-radius: 999px;
+  background: rgba(0,0,0,0.05);
+  transition: transform 0.6s cubic-bezier(.32,.72,0,1), width 0.6s cubic-bezier(.32,.72,0,1);
+  z-index: 1;
+  pointer-events: none;
+}
+[data-theme="dark"] .styles_NavigationWrapper__VKYXQ .nav-slider { background: rgba(255,255,255,0.1); }
+.styles_NavigationWrapper__VKYXQ li { position: relative; z-index: 2; }
+.styles_NavigationWrapper__VKYXQ a {
+  display: block;
+  padding: 10px 20px;
+  font-family: 'Google Sans', sans-serif;
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: inherit;
+  text-decoration: none;
+  transition: color 0.2s;
+  white-space: nowrap;
+}
+.styles_NavigationWrapper__VKYXQ a svg {
+  width: 18px; height: 18px; fill: currentColor;
+  display: inline-block; vertical-align: middle;
+}
+
+/* ══════════ TOP-LEFT TOOLS ══════════ */
+.top-left-tools {
+  position: fixed; top: 20px; left: 74px;
+  display: flex; align-items: center; gap: 8px; z-index: 9300;
+}
+.tool-btn {
+  background: var(--tool-bg); backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--card-border); border-radius: 50%;
+  height: 38px; width: 38px; min-width: 38px; display: inline-flex; align-items: center; justify-content: center; padding: 0;
+  color: var(--text-main); font-family: 'Google Sans', sans-serif; font-weight: 600;
+  transition: all 0.22s cubic-bezier(.32,.72,0,1);
+  box-sizing: border-box;
+  text-decoration: none;
+}
+.tool-btn:hover { border-color: var(--mint); color: var(--mint); transform: translateY(-1px); }
+.tool-btn svg { width: 18px; height: 18px; fill: currentColor; }
+.theme-toggle { width: 38px; height: 38px; padding: 0; justify-content: center; position: relative; overflow: hidden; border-radius: 999px; }
+.theme-toggle .icon-wrap { position: relative; width: 22px; height: 22px; display: flex; align-items: center; justify-content: center; }
+.theme-toggle .icon-sun,
+.theme-toggle .icon-moon {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 20px;
+  height: 20px;
+  display: block;
+  stroke: currentColor;
+  transform-box: fill-box;
+  transform-origin: center center;
+  transition: opacity 0.35s cubic-bezier(.32,.72,0,1), transform 0.45s cubic-bezier(.32,.72,0,1), visibility 0.35s;
+  pointer-events: none;
+}
+.theme-toggle .sun-rotor { transform-box: fill-box; transform-origin: center center; animation: sunSpin 14s linear infinite; }
+@keyframes sunSpin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+html[data-theme="dark"] .theme-toggle .icon-sun { opacity: 0; transform: translate(-50%, -50%) scale(0.5) rotate(-60deg); visibility: hidden; }
+html[data-theme="dark"] .theme-toggle .icon-moon { opacity: 1; transform: translate(-50%, -50%) scale(1) rotate(0deg); visibility: visible; }
+html[data-theme="light"] .theme-toggle .icon-sun { opacity: 1; transform: translate(-50%, -50%) scale(1) rotate(0deg); visibility: visible; }
+html[data-theme="light"] .theme-toggle .icon-moon { opacity: 0; transform: translate(-50%, -50%) scale(0.5) rotate(60deg); visibility: hidden; }
+
+/* Search */
+.search-container { position: relative; display: flex; align-items: center; width: auto; flex-shrink: 0; }
+.search-trigger {
+  position: absolute; left: 0; top: 50%; transform: translateY(-50%); width: 38px; height: 38px;
+  border-radius: 50%; border: none; background: transparent;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--text-main); z-index: 3; pointer-events: none;
+  transition: color .22s ease;
+}
+.search-container:hover .search-trigger, .search-container:focus-within .search-trigger { color: var(--mint); }
+.search-input {
+  background: var(--tool-bg); backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--card-border); border-radius: 999px;
+  height: 38px; width: 38px; padding: 0 0 0 38px;
+  color: var(--nav-text); font-family: 'Google Sans', sans-serif; font-size: 0.88rem; font-weight: 500; outline: none;
+  cursor: pointer;
+  box-sizing: border-box;
+  transition: width 0.32s cubic-bezier(.32,.72,0,1), background 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+  z-index: 1;
+}
+.search-input::placeholder { color: transparent; transition: color 0.2s ease; }
+.search-container.active .search-input,
+.search-container:focus-within .search-input,
+.search-input:focus,
+.search-input:not(:placeholder-shown) {
+  width: min(240px, calc(100vw - 190px));
+  cursor: text;
+  background: var(--nav-bg);
+  color: var(--nav-text);
+  border-color: var(--mint);
+  padding: 0 14px 0 38px;
+  box-shadow: 0 4px 20px rgba(0, 242, 254, 0.15);
+}
+.search-container.active .search-input::placeholder,
+.search-container:focus-within .search-input::placeholder,
+.search-input:focus::placeholder,
+.search-input:not(:placeholder-shown)::placeholder {
+  color: color-mix(in srgb, var(--nav-text) 50%, transparent);
+}
+.home-shortcut { width: 38px; height: 38px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; }
+.home-shortcut svg { width: 18px; height: 18px; fill: currentColor; stroke: none; }
+
+/* ══════════ TOP-CENTER SUB-NAV (Publications / Projects) ══════════ */
+#research-subnav-wrapper {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9100;
+  display: flex;
+  align-items: center;
+  background: rgba(255,255,255,0.62);
+  backdrop-filter: blur(30px) saturate(200%);
+  -webkit-backdrop-filter: blur(30px) saturate(200%);
+  color: #000000;
+  border-radius: 999px;
+  padding: 7px 10px;
+  list-style: none;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.10), inset 0 1px 2px rgba(255,255,255,0.5);
+  border: 1px solid rgba(255,255,255,0.28);
+  gap: 2px;
+}
+[data-theme="dark"] #research-subnav-wrapper {
+  background: rgba(20,20,30,0.55);
+  border-color: rgba(255,255,255,0.14);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.35), inset 0 1px 2px rgba(255,255,255,0.08);
+  color: #ffffff;
+}
+#research-subnav-wrapper .subnav-slider {
+  position: absolute;
+  top: 7px; bottom: 7px; left: 0;
+  border-radius: 999px;
+  background: rgba(0,0,0,0.06);
+  transition: transform 0.55s cubic-bezier(.32,.72,0,1), width 0.55s cubic-bezier(.32,.72,0,1);
+  z-index: 1;
+  pointer-events: none;
+}
+[data-theme="dark"] #research-subnav-wrapper .subnav-slider { background: rgba(255,255,255,0.12); }
+#research-subnav-wrapper li {
+  position: relative;
+  z-index: 2;
+}
+#research-subnav-wrapper a {
+  display: block;
+  padding: 9px 22px;
+  font-family: 'Google Sans', sans-serif;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: inherit;
+  text-decoration: none;
+  transition: color 0.2s;
+  white-space: nowrap;
+  border-radius: 999px;
+}
+#research-subnav-wrapper a.active-sub {
+  color: var(--mint);
+}
+
+/* ══════════ PAGE HERO ══════════ */
+.page-hero {
+  padding: 130px clamp(1.5rem,6vw,6rem) 3.5rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+.page-hero-kicker {
+  display: inline-block;
+  padding: .2rem .75rem;
+  border-radius: 999px;
+  border: 1px solid var(--card-border);
+  color: var(--mint);
+  font-size: .72rem;
+  font-weight: 700;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  margin-bottom: 1rem;
+}
+.page-hero h1 {
+  font-family: var(--display-font);
+  font-size: clamp(2.4rem, 5.5vw, 4.2rem);
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  margin-bottom: 1.2rem;
+}
+.page-hero p {
+  font-size: clamp(.95rem, 1.6vw, 1.12rem);
+  color: var(--text-muted);
+  max-width: 60ch;
+  line-height: 1.85;
+}
+
+/* ══════════ SECTION PANELS ══════════ */
+.research-section {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 clamp(1.5rem,6vw,6rem) 6rem;
+  display: none;
+}
+.research-section.active { display: block; }
+
+/* Section heading */
+.section-heading {
+  font-family: var(--display-font);
+  font-size: clamp(1.5rem,3vw,2.2rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin-bottom: 2rem;
+  color: var(--text-main);
+}
+.section-subheading {
+  font-size: .88rem;
+  color: var(--text-muted);
+  margin-top: -.8rem;
+  margin-bottom: 2.4rem;
+  line-height: 1.7;
+  max-width: 55ch;
+}
+
+/* ── Publication cards ── */
+.pub-grid { display: flex; flex-direction: column; gap: 1.4rem; }
+.pub-card {
+  padding: 2rem 2.2rem;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 20px;
+  transition: border-color .3s, transform .3s, box-shadow .3s;
+  position: relative;
+  overflow: hidden;
+}
+.pub-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 3px; height: 100%;
+  background: linear-gradient(180deg, var(--mint), var(--violet));
+  opacity: 0;
+  transition: opacity .3s;
+}
+.pub-card:hover { border-color: var(--mint); transform: translateY(-4px); box-shadow: 0 12px 40px rgba(0,0,0,0.08); }
+.pub-card:hover::before { opacity: 1; }
+.pub-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: .35rem;
+  padding: .18rem .65rem;
+  border-radius: 999px;
+  border: 1px solid var(--card-border);
+  font-family: 'Space Mono', monospace;
+  font-size: .68rem;
+  color: var(--mint);
+  margin-bottom: 1rem;
+  letter-spacing: .04em;
+}
+.pub-badge.preprint { color: var(--violet); border-color: color-mix(in srgb, var(--violet) 40%, transparent); }
+.pub-badge.published { color: var(--mint); border-color: color-mix(in srgb, var(--mint) 40%, transparent); }
+.pub-badge.review { color: #f97316; border-color: rgba(249,115,22,0.35); }
+.pub-title {
+  font-family: var(--display-font);
+  font-size: 1.18rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  margin-bottom: .5rem;
+  color: var(--text-main);
+  line-height: 1.45;
+}
+.pub-authors {
+  font-size: .83rem;
+  color: var(--text-muted);
+  margin-bottom: .5rem;
+  line-height: 1.6;
+}
+.pub-authors strong { color: var(--mint); font-weight: 600; }
+.pub-journal {
+  font-family: 'Space Mono', monospace;
+  font-size: .75rem;
+  color: var(--text-muted);
+  margin-bottom: 1rem;
+}
+.pub-abstract {
+  font-size: .87rem;
+  color: var(--text-muted);
+  line-height: 1.75;
+  margin-bottom: 1.2rem;
+}
+.pub-tags { display: flex; flex-wrap: wrap; gap: .5rem; }
+.pub-tag {
+  padding: .18rem .65rem;
+  border-radius: 999px;
+  background: var(--tool-bg);
+  border: 1px solid var(--card-border);
+  font-size: .72rem;
+  color: var(--text-muted);
+}
+.pub-links { display: flex; gap: .75rem; margin-top: 1.2rem; }
+.pub-link {
+  display: inline-block;
+  padding: .45rem 1.1rem;
+  border-radius: 999px;
+  border: 1px solid var(--card-border);
+  font-size: .8rem;
+  font-weight: 600;
+  color: var(--text-main);
+  text-decoration: none;
+  transition: border-color .2s, color .2s, transform .2s;
+}
+.pub-link:hover { border-color: var(--mint); color: var(--mint); transform: translateY(-1px); }
+.pub-link.primary {
+  background: linear-gradient(90deg, var(--blue), var(--violet));
+  border-color: transparent;
+  color: #fff;
+}
+.pub-link.primary:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(102,51,255,0.35); }
+
+/* ── Project cards ── */
+.proj-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 1.4rem;
+}
+.proj-card {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 20px;
+  overflow: hidden;
+  transition: border-color .3s, transform .3s, box-shadow .3s;
+  display: flex;
+  flex-direction: column;
+}
+.proj-card:hover { border-color: var(--mint); transform: translateY(-5px); box-shadow: 0 14px 48px rgba(0,0,0,0.09); }
+.proj-card-header {
+  padding: 1.8rem 1.8rem 0;
+  position: relative;
+}
+.proj-icon {
+  width: 46px; height: 46px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, var(--blue), var(--violet));
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.3rem;
+  margin-bottom: 1.1rem;
+  flex-shrink: 0;
+}
+.proj-status {
+  position: absolute; top: 1.4rem; right: 1.4rem;
+  font-size: .68rem; font-weight: 700;
+  letter-spacing: .08em; text-transform: uppercase;
+  padding: .18rem .65rem;
+  border-radius: 999px;
+  border: 1px solid;
+}
+.proj-status.ongoing { color: var(--mint); border-color: color-mix(in srgb, var(--mint) 40%, transparent); }
+.proj-status.completed { color: #94a3b8; border-color: rgba(148,163,184,0.3); }
+.proj-status.upcoming { color: #f97316; border-color: rgba(249,115,22,0.3); }
+.proj-title {
+  font-family: var(--display-font);
+  font-size: 1.08rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  margin-bottom: .4rem;
+  color: var(--text-main);
+}
+.proj-card-body {
+  padding: 0.6rem 1.8rem 1.8rem;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: .85rem;
+}
+.proj-desc {
+  font-size: .87rem;
+  color: var(--text-muted);
+  line-height: 1.72;
+}
+.proj-meta-row {
+  display: flex;
+  gap: .5rem;
+  flex-wrap: wrap;
+}
+.proj-tag {
+  padding: .18rem .65rem;
+  border-radius: 999px;
+  background: var(--tool-bg);
+  border: 1px solid var(--card-border);
+  font-size: .72rem;
+  color: var(--text-muted);
+}
+.proj-collaborators {
+  font-size: .8rem;
+  color: var(--text-muted);
+  line-height: 1.55;
+}
+.proj-collaborators span { color: var(--text-main); font-weight: 500; }
+.proj-progress {
+  height: 4px;
+  border-radius: 4px;
+  background: var(--card-border);
+  overflow: hidden;
+  margin-top: auto;
+}
+.proj-progress-fill {
+  height: 100%;
+  border-radius: 4px;
+  background: linear-gradient(90deg, var(--blue), var(--mint));
+  transition: width 1.2s cubic-bezier(0.22,0.61,0.36,1);
+  width: 0;
+}
+.proj-card:hover .proj-progress-fill { width: var(--prog, 0%); }
+
+/* ── Filter Pills ── */
+.filter-row {
+  display: flex;
+  gap: .65rem;
+  flex-wrap: wrap;
+  margin-bottom: 2.2rem;
+  align-items: center;
+}
+.filter-label {
+  font-size: .78rem;
+  color: var(--text-muted);
+  font-weight: 600;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+  margin-right: .3rem;
+}
+.filter-pill {
+  padding: .32rem .9rem;
+  border-radius: 999px;
+  border: 1px solid var(--card-border);
+  font-size: .8rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  background: transparent;
+  transition: border-color .2s, color .2s, background .2s;
+  font-family: 'Google Sans', sans-serif;
+}
+.filter-pill:hover, .filter-pill.active {
+  border-color: var(--mint);
+  color: var(--mint);
+  background: color-mix(in srgb, var(--mint) 8%, transparent);
+}
+
+/* ── Stats strip ── */
+.stats-strip {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+  margin-bottom: 3.5rem;
+}
+.stat-box {
+  padding: 1.4rem 1.6rem;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 16px;
+  transition: border-color .25s, transform .25s;
+}
+.stat-box:hover { border-color: var(--mint); transform: translateY(-2px); }
+.stat-value {
+  font-family: var(--display-font);
+  font-size: 2.2rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--mint);
+  line-height: 1;
+  margin-bottom: .3rem;
+}
+.stat-label {
+  font-size: .8rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+/* ── Reveal ── */
+.rv { opacity: 0; transform: translateY(28px); transition: opacity .7s, transform .7s; }
+.rv.in { opacity: 1; transform: none; }
+
+/* ══════════ FOOTER ══════════ */
+.black-pill {
+  position: relative;
+  width: min(94vw, 1328px);
+  height: 8px;
+  margin: 2.4rem auto 0;
+  background: #ffd700;
+  border-radius: 12px;
+}
+.footer-paper-layer {
+  --footer-radius: calc(var(--surface-radius) + 2px);
+  position: relative;
+  width: 100%;
+  height: 72px;
+  margin-bottom: calc(-1 * var(--footer-radius));
+  z-index: 0;
+  background:
+    radial-gradient(circle at left bottom, transparent calc(var(--footer-radius) + 1px), var(--bg) calc(var(--footer-radius) + 2px)) left bottom / 50% 100% no-repeat,
+    radial-gradient(circle at right bottom, transparent calc(var(--footer-radius) + 1px), var(--bg) calc(var(--footer-radius) + 2px)) right bottom / 50% 100% no-repeat,
+    var(--bg);
+  pointer-events: none;
+}
+
+
+/* ══════════ CONTACT MODAL ══════════ */
+.modal-overlay {
+  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  display: none; align-items: center; justify-content: center;
+  z-index: 10000; opacity: 0; transition: opacity 0.4s ease; overflow: hidden;
+}
+.modal-overlay.active { display: flex !important; opacity: 1 !important; }
+.liquid-glass-bg {
+  position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+  background: linear-gradient(135deg, rgba(10,10,20,0.25) 0%, rgba(20,20,40,0.35) 100%);
+  backdrop-filter: blur(40px); z-index: 1;
+}
+.close-btn-modal {
+  position: fixed; top: 20px; right: 24px;
+  width: 38px; height: 38px;
+  border: 1px solid var(--card-border); background: var(--nav-bg); color: var(--nav-text);
+  font-size: 24px; cursor: pointer; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.3s ease; z-index: 9900; backdrop-filter: blur(16px);
+}
+.close-btn-modal:hover { background: rgba(255,255,255,0.15) !important; border-color: rgba(255,255,255,0.6) !important; transform: rotate(90deg); }
+.contact-headline-wrap { margin-bottom: 34px; animation: greetingAppear 1.3s cubic-bezier(0.2,0.95,0.2,1) forwards; }
+.contact-rows { opacity: 0; animation: revealRows 0.78s ease-out 1.12s forwards; }
+@keyframes greetingAppear {
+  0% { opacity: 1; transform: translate(var(--welcome-start-x,0px), var(--welcome-start-y,28vh)) scale(1.08); }
+  100% { opacity: 1; transform: translate(0,0) scale(1); }
+}
+@keyframes revealRows { 0% { opacity: 0; transform: translateY(16px); } 100% { opacity: 1; transform: translateY(0); } }
+.contact-schematic {
+  display: grid; gap: 18px;
+  grid-template-columns: repeat(2, minmax(0,1fr));
+  grid-template-areas: "collab hiring" "figure actions";
+}
+.top-pill { min-height: 200px; display: flex; flex-direction: column; justify-content: space-between; }
+.figure-single-block { height: 200px; width: 100%; justify-self: stretch; transition: all 0.4s cubic-bezier(.32,.72,0,1); }
+.anything-photo-overlay { position: absolute; inset: 0; background: linear-gradient(90deg, rgba(255,255,255,0.09) 0%, rgba(255,255,255,0.05) 100%); pointer-events: none; }
+.anything-card-content { position: absolute; inset: 0; z-index: 2; padding: 26px; display: flex; flex-direction: column; justify-content: space-between; }
+.anything-card-eyebrow { font-size: .8rem; letter-spacing: 2px; text-transform: uppercase; color: rgba(255,255,255,0.82); font-weight: 700; }
+.anything-card-copy { font-size: 1.3rem; color: var(--text-main); font-weight: 500; margin: 0; line-height: 1.4; max-width: 250px; }
+.anything-card-arrow { font-size: 1.8rem; opacity: 0.6; transition: all 0.3s ease; }
+.contact-option-large:hover { background: rgba(255,255,255,0.12) !important; border-color: rgba(255,255,255,0.25) !important; transform: translateY(-8px); box-shadow: 0 15px 50px rgba(0,0,0,0.3); }
+.contact-option-large.top-pill:hover div:last-child { opacity: 1 !important; transform: translateX(8px); }
+.figure-single-block:hover .anything-card-arrow { opacity: 1; transform: translateX(8px); }
+.anything-bottom-row { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 10px; }
+.email-btn { background: linear-gradient(120deg, rgba(66,133,244,0.28) 0%, rgba(234,67,53,0.24) 38%, rgba(251,188,5,0.23) 68%, rgba(52,168,83,0.26) 100%) !important; border-color: rgba(255,255,255,0.22) !important; }
+.email-btn:hover { background: linear-gradient(120deg,#4285f4 0%,#ea4335 38%,#fbbc05 68%,#34a853 100%) !important; border-color: rgba(255,255,255,0.62) !important; box-shadow: 0 14px 34px rgba(66,133,244,0.34) !important; transform: translateY(-2px); }
+.whatsapp-btn:hover { background: #25d366 !important; border-color: #25d366 !important; box-shadow: 0 12px 30px rgba(37,211,102,0.45) !important; transform: translateY(-2px); }
+.instagram-btn:hover { background: #e4405f !important; border-color: #e4405f !important; box-shadow: 0 12px 30px rgba(228,64,95,0.42) !important; transform: translateY(-2px); }
+.slack-btn:hover { background: #4a154b !important; border-color: #4a154b !important; box-shadow: 0 12px 30px rgba(74,21,75,0.4) !important; transform: translateY(-2px); }
+.linkedin-btn:hover { background: #0a66c2 !important; border-color: #0a66c2 !important; box-shadow: 0 12px 30px rgba(10,102,194,0.4) !important; transform: translateY(-2px); }
+.email-btn:hover div, .whatsapp-btn:hover div, .instagram-btn:hover div, .slack-btn:hover div, .linkedin-btn:hover div { color: #ffffff !important; }
+
+@media(max-width:600px){
+  .top-left-tools { top: 1rem; left: 4rem; }
+  .top-talk-btn { top: 14px; right: 14px; padding: 0.58rem 0.92rem; font-size: 0.86rem; }
+  #research-subnav-wrapper { top: 74px; }
+  .stats-strip { grid-template-columns: repeat(2,1fr); }
+  .proj-grid { grid-template-columns: 1fr; }
+  .contact-schematic { grid-template-columns: 1fr; grid-template-areas: "collab" "hiring" "figure" "actions"; }
+  .figure-single-block { width:100%; height:auto; aspect-ratio: 4/3; }
+}
+</style>
+</head>
+<body>
+
+
+<!-- TOP-LEFT LOGO -->
+<a href="index.html" class="top-left-logo" aria-label="Home"></a>
+
+<!-- TOP-LEFT UTILS -->
+<div class="top-left-tools">
+  <div class="search-container">
+    <button class="search-trigger" aria-label="Search">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+    </button>
+    <input type="text" class="search-input" placeholder="Search..." aria-label="Search">
+  </div>
+  <a href="index.html" class="tool-btn home-shortcut" aria-label="Home">
+    <svg viewBox="0 0 24 24" width="18" height="18"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+  </a>
+  <button class="tool-btn theme-toggle" id="themeBtn" aria-label="Toggle Light/Dark Mode">
+    <div class="icon-wrap">
+      <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <defs>
+          <radialGradient id="sG-research" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stop-color="#FFD37A"/>
+            <stop offset="60%" stop-color="#FF9A3C"/>
+            <stop offset="100%" stop-color="#FF6A00"/>
+          </radialGradient>
+        </defs>
+        <g class="sun-rotor">
+          <circle cx="12" cy="12" r="4.5" fill="url(#sG-research)" stroke="none"/>
+          <line x1="12" y1="1.5" x2="12" y2="3.5"/>
+          <line x1="12" y1="20.5" x2="12" y2="22.5"/>
+          <line x1="4.5" y1="4.5" x2="6" y2="6"/>
+          <line x1="18" y1="18" x2="19.5" y2="19.5"/>
+          <line x1="1.5" y1="12" x2="3.5" y2="12"/>
+          <line x1="20.5" y1="12" x2="22.5" y2="12"/>
+          <line x1="4.5" y1="19.5" x2="6" y2="18"/>
+          <line x1="18" y1="6" x2="19.5" y2="4.5"/>
+        </g>
+      </svg>
+      <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" fill="currentColor" fill-opacity="0.18"/>
+        <circle cx="19" cy="5" r="1" fill="currentColor" stroke="none" opacity="0.8"/>
+        <circle cx="15.5" cy="2.5" r="0.75" fill="currentColor" stroke="none" opacity="0.6"/>
+      </svg>
+    </div>
+  </button>
+</div>
+
+<!-- TOP-CENTER SUB-NAV (Research sub-pages) -->
+<ul id="research-subnav-wrapper" role="tablist" aria-label="Research sub-sections">
+  <div class="subnav-slider" id="subnav-slider" aria-hidden="true"></div>
+  <li role="presentation"><a href="#publications" data-section="publications" role="tab" aria-selected="true" class="active-sub">Publications</a></li>
+  <li role="presentation"><a href="#projects" data-section="projects" role="tab" aria-selected="false">Projects</a></li>
+  <li role="presentation"><a href="#books" data-section="books" role="tab" aria-selected="false">Books</a></li>
+</ul>
+
+<!-- LET'S TALK -->
+<button type="button" class="top-talk-btn" data-open-contact-modal>Let's Talk</button>
+
+<!-- BOTTOM MAIN NAV -->
+<ul id="main-nav-wrapper" class="styles_NavigationWrapper__VKYXQ">
+  <div class="nav-slider" id="nav-slider" inert></div>
+  <li class="nav-item home-item"><a href="index.html" data-nav="home"><svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg></a></li>
+  <li class="nav-item"><a href="research.html" data-nav="research">Research</a></li>
+  <li class="nav-item"><a href="blog-formal.html" data-nav="writing">Writing</a></li>
+  <li class="nav-item"><a href="about.html" data-nav="about">About</a></li>
+</ul>
+
+<!-- PAGE HERO -->
+<div class="page-hero rv">
+  <span class="page-hero-kicker">Research</span>
+  <h1>Thermoelectric Materials<br>&amp; Defect Engineering</h1>
+  <p>My work explores the physics of energy conversion in thermoelectric materials — from point defect phonon scattering and alloy disorder to band convergence and transport optimisation.</p>
+</div>
+
+<!-- ══════════ PUBLICATIONS SECTION ══════════ -->
+<section id="publications" class="research-section active" role="tabpanel" aria-labelledby="tab-publications">
+
+  <!-- Stats -->
+  <div class="stats-strip rv">
+    <div class="stat-box">
+      <div class="stat-value">2</div>
+      <div class="stat-label">In Preparation</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-value">11</div>
+      <div class="stat-label">Research Projects</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-value">3</div>
+      <div class="stat-label">Partner Labs</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-value">101</div>
+      <div class="stat-label">Favorite Books</div>
+    </div>
+  </div>
+
+  <!-- Filters -->
+  <div class="filter-row rv">
+    <span class="filter-label">Filter</span>
+    <button class="filter-pill active" data-filter="all">All</button>
+    <button class="filter-pill" data-filter="thermoelectric">Thermoelectric</button>
+    <button class="filter-pill" data-filter="transport">Transport</button>
+  </div>
+
+  <!-- Cards -->
+  <div class="pub-grid">
+
+    <!-- 1. PEDOT:PSS Review -->
+    <div class="pub-card rv" data-tags="thermoelectric">
+      <span class="pub-badge" style="color:var(--mint);border-color:color-mix(in srgb, var(--mint) 40%, transparent);">● In Preparation · 2026</span>
+      <div class="pub-title">Comprehensive Review on PEDOT:PSS / Bi-Te Based Organic–Inorganic Thermoelectric Composites and Flexible Device Architectures</div>
+      <div class="pub-authors"><strong>Kurapati S. Abhiram</strong>, Chia-Ji Liu, et al.</div>
+      <div class="pub-journal">Manuscript in Preparation · Novel Materials and Thermoelectrics Laboratory, NCUE, Taiwan</div>
+      <div class="pub-abstract">A comprehensive state-of-the-art review exploring the interface transport physics, energy filtering, and power factor enhancement mechanisms in Bismuth–Tellurium chalcogenides blended with conducting polymer PEDOT:PSS. Evaluates room-temperature solution synthesis pathways, chemical stability, and device engineering trade-offs for wearable and flexible thermoelectric generators.</div>
+      <div class="pub-tags">
+        <span class="pub-tag">PEDOT:PSS</span>
+        <span class="pub-tag">Bi-Te</span>
+        <span class="pub-tag">Flexible Thermoelectrics</span>
+        <span class="pub-tag">Review</span>
+      </div>
+      <div class="pub-links">
+        <span class="pub-link primary" style="cursor:default;">In Preparation</span>
+        <span class="pub-link" style="opacity:0.6;cursor:default;">Preprint Soon</span>
+      </div>
+    </div>
+
+    <!-- 2. Cu-Sb-Se-Te Composite from CV -->
+    <div class="pub-card rv" data-tags="thermoelectric transport">
+      <span class="pub-badge" style="color:var(--mint);border-color:color-mix(in srgb, var(--mint) 40%, transparent);">● In Preparation · 2026</span>
+      <div class="pub-title">Band Engineering and Defect Chemistry in Cu-Sb-Se-Te Chalcogenide Composites for High-Efficiency Thermoelectric Power Generation</div>
+      <div class="pub-authors"><strong>Kurapati S. Abhiram</strong>, Suresh Perumal, et al.</div>
+      <div class="pub-journal">Manuscript in Preparation · Laboratory for Energy and Advanced Devices (LEAD), IIT Hyderabad</div>
+      <div class="pub-abstract">Investigation into Cu-Sb-Se based chalcogenides synthesised via solid-state reaction and densified through induction/resistive hot pressing. Te alloying is systematically leveraged to tune carrier concentration, promote multi-valley band convergence, and introduce nanoscale mass-fluctuation phonon scattering for elevated thermoelectric figure of merit (zT).</div>
+      <div class="pub-tags">
+        <span class="pub-tag">Cu-Sb-Se</span>
+        <span class="pub-tag">Te Alloying</span>
+        <span class="pub-tag">Band Engineering</span>
+        <span class="pub-tag">zT Optimisation</span>
+        <span class="pub-tag">Hot Pressing</span>
+      </div>
+      <div class="pub-links">
+        <span class="pub-link primary" style="cursor:default;">In Preparation</span>
+        <span class="pub-link" style="opacity:0.6;cursor:default;">Preprint Soon</span>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ══════════ PROJECTS SECTION ══════════ -->
+<section id="projects" class="research-section" role="tabpanel" aria-labelledby="tab-projects">
+
+  <h2 class="section-heading rv">Research Projects</h2>
+  <p class="section-subheading rv">Active and completed experimental and computational projects spanning thermoelectric characterisation, defect engineering, chalcogenides, spintronics, and research workflow tools.</p>
+
+  <div class="proj-grid">
+
+    <!-- [1-A] NCUE, Taiwan -->
+    <div class="proj-card rv">
+      <div class="proj-card-header">
+        <div class="proj-icon">🔬</div>
+        <span class="proj-status ongoing">Ongoing · 2026</span>
+        <div class="proj-title">[1-A] Exploring III-VI Semiconductors for Functional Applications</div>
+      </div>
+      <div class="proj-card-body">
+        <p class="proj-desc">Extensively working on Bismuth–Tellurium based semiconducting materials for thermoelectric device-level applications. Developing expertise in the influence of PEDOT:PSS on room-temperature synthesised materials.</p>
+        <div class="proj-meta-row">
+          <span class="proj-tag">Bi-Te</span>
+          <span class="proj-tag">PEDOT:PSS</span>
+          <span class="proj-tag">Thermoelectrics</span>
+          <span class="proj-tag">Room Temp Synthesis</span>
+        </div>
+        <div class="proj-collaborators">Supervisor: <span>Prof. Chia Ji Liu</span> · Novel Materials &amp; Thermoelectrics Lab, NCUE Taiwan</div>
+        <div class="proj-progress"><div class="proj-progress-fill" style="--prog:85%"></div></div>
+      </div>
+    </div>
+
+    <!-- [2-A] IIT Hyderabad -->
+    <div class="proj-card rv">
+      <div class="proj-card-header">
+        <div class="proj-icon">⚡</div>
+        <span class="proj-status ongoing">Ongoing · 2025–26</span>
+        <div class="proj-title">[2-A] Exploring III-VI Semiconductors for Functional Applications</div>
+      </div>
+      <div class="proj-card-body">
+        <p class="proj-desc">Synthesised III-VI semiconducting materials and performed structural, optical, and thermal characterisation. Exploration of functional device applications and property optimization are actively underway.</p>
+        <div class="proj-meta-row">
+          <span class="proj-tag">III-VI</span>
+          <span class="proj-tag">Thermal Transport</span>
+          <span class="proj-tag">Optical Gap</span>
+          <span class="proj-tag">Functional Devices</span>
+        </div>
+        <div class="proj-collaborators">Supervisor: <span>Dr. Suresh Perumal</span> · LEAD, IIT Hyderabad</div>
+        <div class="proj-progress"><div class="proj-progress-fill" style="--prog:75%"></div></div>
+      </div>
+    </div>
+
+    <!-- [2-B] IIT Hyderabad -->
+    <div class="proj-card rv">
+      <div class="proj-card-header">
+        <div class="proj-icon">🔋</div>
+        <span class="proj-status completed">Completed · 2025–26</span>
+        <div class="proj-title">[2-B] Band Engineering of I-III-VI₂ for Thermoelectric Power Generation</div>
+      </div>
+      <div class="proj-card-body">
+        <p class="proj-desc">Synthesised Cu-Sb-Se based chalcogenides via solid-state reaction with densification through hot pressing. Te alloying was explored to tune thermoelectric transport properties across structural, optical, chemical, and thermoelectric regimes.</p>
+        <div class="proj-meta-row">
+          <span class="proj-tag">Cu-Sb-Se</span>
+          <span class="proj-tag">Solid-State</span>
+          <span class="proj-tag">Hot Pressing</span>
+          <span class="proj-tag">Te Alloying</span>
+          <span class="proj-tag">Band Engineering</span>
+        </div>
+        <div class="proj-collaborators">Supervisor: <span>Dr. Suresh Perumal</span> · LEAD, IIT Hyderabad</div>
+        <div class="proj-progress"><div class="proj-progress-fill" style="--prog:100%"></div></div>
+      </div>
+    </div>
+
+    <!-- [3] IISER Pune -->
+    <div class="proj-card rv">
+      <div class="proj-card-header">
+        <div class="proj-icon">🧲</div>
+        <span class="proj-status completed">Completed · 2025</span>
+        <div class="proj-title">[3] Encapsulation of Metal Oxides in Carbon Nanotubes (CNTs)</div>
+      </div>
+      <div class="proj-card-body">
+        <p class="proj-desc">Synthesised and designed single- and multi-walled CNTs via Chemical Vapour Deposition (CVD) and encapsulated metal oxides. Performed sample property analysis with AC susceptibility measurements and Raman spectroscopy.</p>
+        <div class="proj-meta-row">
+          <span class="proj-tag">CNTs</span>
+          <span class="proj-tag">CVD</span>
+          <span class="proj-tag">AC Susceptibility</span>
+          <span class="proj-tag">Raman</span>
+          <span class="proj-tag">Spintronics</span>
+        </div>
+        <div class="proj-collaborators">Supervisor: <span>Dr. Ashna Bajpai</span> · Nanomagnets &amp; Spintronics, IISER Pune</div>
+        <div class="proj-progress"><div class="proj-progress-fill" style="--prog:100%"></div></div>
+      </div>
+    </div>
+
+    <!-- [4-A] IISER Pune -->
+    <div class="proj-card rv">
+      <div class="proj-card-header">
+        <div class="proj-icon">📈</div>
+        <span class="proj-status completed">Completed · 2024</span>
+        <div class="proj-title">[4-A] Improvement of zT in p-type Chalcogenide Materials</div>
+      </div>
+      <div class="proj-card-body">
+        <p class="proj-desc">Synthesis and zT measurements via co-doping at the Sb and Te sites with Mn, Zn, and Se respectively, in Ag-Sb-Se/Te-based chalcogenide semiconducting materials prepared through solid-state synthesis.</p>
+        <div class="proj-meta-row">
+          <span class="proj-tag">Ag-Sb-Se/Te</span>
+          <span class="proj-tag">zT Optimisation</span>
+          <span class="proj-tag">Co-Doping</span>
+          <span class="proj-tag">Solid-State</span>
+        </div>
+        <div class="proj-collaborators">Supervisor: <span>Prof. Surjeet Singh</span> · Quantum Material Growth Lab, IISER Pune</div>
+        <div class="proj-progress"><div class="proj-progress-fill" style="--prog:100%"></div></div>
+      </div>
+    </div>
+
+    <!-- [4-B] IISER Pune -->
+    <div class="proj-card rv">
+      <div class="proj-card-header">
+        <div class="proj-icon">⚙️</div>
+        <span class="proj-status completed">Completed · 2024</span>
+        <div class="proj-title">[4-B] n-type Thermoelectric Half-Heusler Materials</div>
+      </div>
+      <div class="proj-card-body">
+        <p class="proj-desc">Explored n-type TaFeSb Half-Heusler compounds via arc melting and powder synthesis. Phase purity was addressed as a key challenge, accompanied by concurrent analysis of antisite disorder effects on zT in p-type HH compounds.</p>
+        <div class="proj-meta-row">
+          <span class="proj-tag">TaFeSb</span>
+          <span class="proj-tag">Half-Heusler</span>
+          <span class="proj-tag">Arc Melting</span>
+          <span class="proj-tag">Antisite Disorder</span>
+        </div>
+        <div class="proj-collaborators">With: <span>Prof. Surjeet Singh</span> · IISER Pune</div>
+        <div class="proj-progress"><div class="proj-progress-fill" style="--prog:100%"></div></div>
+      </div>
+    </div>
+
+    <!-- [5] IISER Pune -->
+    <div class="proj-card rv">
+      <div class="proj-card-header">
+        <div class="proj-icon">📡</div>
+        <span class="proj-status completed">Completed · 2024</span>
+        <div class="proj-title">[5] Experimental Techniques in High Energy Physics</div>
+      </div>
+      <div class="proj-card-body">
+        <p class="proj-desc">Hands-on experience in electronics through tabletop detector experiments, with emphasis on calibration and data acquisition (DAQ) methods. Investigated high-energy physics applications in medical imaging.</p>
+        <div class="proj-meta-row">
+          <span class="proj-tag">HEP</span>
+          <span class="proj-tag">Detectors</span>
+          <span class="proj-tag">Calibration</span>
+          <span class="proj-tag">DAQ</span>
+          <span class="proj-tag">Medical Imaging</span>
+        </div>
+        <div class="proj-collaborators">Supervisor: <span>Prof. Seema Sharma</span> · Experimental HEP Group, IISER Pune</div>
+        <div class="proj-progress"><div class="proj-progress-fill" style="--prog:100%"></div></div>
+      </div>
+    </div>
+
+    <!-- [6] IISER Pune -->
+    <div class="proj-card rv">
+      <div class="proj-card-header">
+        <div class="proj-icon">🦠</div>
+        <span class="proj-status completed">Completed · 2022</span>
+        <div class="proj-title">[6] Analysis of Bacterial Contamination in Establishments</div>
+      </div>
+      <div class="proj-card-body">
+        <p class="proj-desc">Investigated microbial colonization patterns and identified bacterial strains in institutional establishments, highlighting the critical importance of rigorous sanitation and hygiene practices.</p>
+        <div class="proj-meta-row">
+          <span class="proj-tag">Microbiology</span>
+          <span class="proj-tag">Colonization</span>
+          <span class="proj-tag">Bacterial Strains</span>
+          <span class="proj-tag">Hygiene</span>
+        </div>
+        <div class="proj-collaborators">Supervisor: <span>Dr. Nishad Matange</span> · Bugs &amp; Drugs Laboratory, IISER Pune</div>
+        <div class="proj-progress"><div class="proj-progress-fill" style="--prog:100%"></div></div>
+      </div>
+    </div>
+
+    <!-- Other Project: TikZ -->
+    <div class="proj-card rv">
+      <div class="proj-card-header">
+        <div class="proj-icon">📐</div>
+        <span class="proj-status ongoing">Open-Source</span>
+        <div class="proj-title">TikZ Schematic Repository for Experimental Physics</div>
+      </div>
+      <div class="proj-card-body">
+        <p class="proj-desc">Development of an open-source LaTeX (TikZ) vector schematic repository for experimental physics setups, laboratory diagrams, and publication-ready scientific illustrations.</p>
+        <div class="proj-meta-row">
+          <span class="proj-tag">LaTeX</span>
+          <span class="proj-tag">TikZ</span>
+          <span class="proj-tag">Open Source</span>
+          <span class="proj-tag">Physics Diagrams</span>
+        </div>
+        <div class="proj-collaborators">GitHub: <span><a href="https://github.com/ksabhiram/TikZ" target="_blank" rel="noopener" style="color:var(--mint);text-decoration:none;">github.com/ksabhiram/TikZ</a></span></div>
+        <div class="proj-progress"><div class="proj-progress-fill" style="--prog:90%"></div></div>
+      </div>
+    </div>
+
+    <!-- Other Project: The Community -->
+    <div class="proj-card rv">
+      <div class="proj-card-header">
+        <div class="proj-icon">🌐</div>
+        <span class="proj-status ongoing">Platform</span>
+        <div class="proj-title">The Community Project: Research Workflow Tools</div>
+      </div>
+      <div class="proj-card-body">
+        <p class="proj-desc">Developing web applications and interactive computational tools to streamline research workflows, experimental data analysis, and calculations—tailored especially for thermoelectric researchers.</p>
+        <div class="proj-meta-row">
+          <span class="proj-tag">Web App</span>
+          <span class="proj-tag">Workflow Automation</span>
+          <span class="proj-tag">Thermoelectrics</span>
+        </div>
+        <div class="proj-collaborators">Live App: <span><a href="https://ksabhiram.github.io/thecommunity/" target="_blank" rel="noopener" style="color:var(--mint);text-decoration:none;">ksabhiram.github.io/thecommunity</a></span></div>
+        <div class="proj-progress"><div class="proj-progress-fill" style="--prog:85%"></div></div>
+      </div>
+    </div>
+
+    <!-- Project: LEAD Group Website, IIT Hyderabad -->
+    <div class="proj-card rv">
+      <div class="proj-card-header">
+        <div class="proj-icon">💻</div>
+        <span class="proj-status completed">Completed · 2025–26</span>
+        <div class="proj-title">Design &amp; Development of LEAD Group Website (IIT Hyderabad)</div>
+      </div>
+      <div class="proj-card-body">
+        <p class="proj-desc">Architected, designed, and deployed the official research laboratory website for the Laboratory for Energy and Advanced Devices (LEAD) at IIT Hyderabad. Built to showcase advanced thermoelectric materials research, group members, instrument facilities, and publication repositories.</p>
+        <div class="proj-meta-row">
+          <span class="proj-tag">Web Design</span>
+          <span class="proj-tag">UI/UX</span>
+          <span class="proj-tag">LEAD IIT Hyderabad</span>
+          <span class="proj-tag">Lab Platform</span>
+        </div>
+        <div class="proj-collaborators">Laboratory: <span>LEAD, IIT Hyderabad</span> · Dr. Suresh Perumal</div>
+        <div class="proj-progress"><div class="proj-progress-fill" style="--prog:100%"></div></div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ══════════ BOOKS SUBSECTION ══════════ -->
+<section id="books" class="research-section" role="tabpanel" aria-labelledby="tab-books">
+
+  <h2 class="section-heading rv">Books &amp; Foundational Reading</h2>
+  <p class="section-subheading rv" style="font-style:italic;">"A book never finds you; you must find it." — Curated 101 favorites from foundational physics to specialized monographs, with IISER Pune Library call numbers.</p>
+
+  <div class="proj-grid">
+
+    <!-- Balki Books -->
+    <div class="proj-card rv">
+      <div class="proj-card-header">
+        <div class="proj-icon">📖</div>
+        <span class="proj-status ongoing">Foundational</span>
+        <div class="proj-title">Prof. V. Balakrishnan (Balki) — Complete Works</div>
+      </div>
+      <div class="proj-card-body">
+        <p class="proj-desc">My favourite author for all foundational physics courses. The legend, the boon for all undergrads of India! Covering <em>Elements of Non-Equilibrium Statistical Mechanics</em>, <em>Mathematical Physics: Selected Topics</em>, and classical dynamics.</p>
+        <div class="proj-meta-row">
+          <span class="proj-tag">Statistical Mechanics</span>
+          <span class="proj-tag">Mathematical Physics</span>
+          <span class="proj-tag">Non-Equilibrium</span>
+        </div>
+        <div class="proj-collaborators">Author: <span>Prof. V. Balakrishnan</span> · IIT Madras / IISER Pune</div>
+      </div>
+    </div>
+
+    <!-- Condensed Matter -->
+    <div class="proj-card rv">
+      <div class="proj-card-header">
+        <div class="proj-icon">🧊</div>
+        <span class="proj-status completed">Condensed Matter</span>
+        <div class="proj-title">Physics of Materials — Prathap Haridoss</div>
+      </div>
+      <div class="proj-card-body">
+        <p class="proj-desc">Comprehensive conceptual treatment of modern materials science and solid-state phenomena, structure-property relationships, defect energetics, and electronic transport.</p>
+        <div class="proj-meta-row">
+          <span class="proj-tag">Solid-State</span>
+          <span class="proj-tag">Defects</span>
+          <span class="proj-tag">Materials Science</span>
+        </div>
+        <div class="proj-collaborators">Library: <span>530.41/HAR</span> · IISER Pune Library</div>
+      </div>
+    </div>
+
+    <!-- Radiation Detection -->
+    <div class="proj-card rv">
+      <div class="proj-card-header">
+        <div class="proj-icon">☢️</div>
+        <span class="proj-status completed">Experimental HEP</span>
+        <div class="proj-title">Radiation Detection and Measurement — Glenn F. Knoll</div>
+      </div>
+      <div class="proj-card-body">
+        <p class="proj-desc">The definitive reference on radiation detectors, scintillation counting, semiconductor spectrometers, pulse electronics, and nuclear instrumentation calibration.</p>
+        <div class="proj-meta-row">
+          <span class="proj-tag">Detectors</span>
+          <span class="proj-tag">Instrumentation</span>
+          <span class="proj-tag">John Wiley &amp; Sons</span>
+        </div>
+        <div class="proj-collaborators">Library: <span>540</span> · IISER Pune Library</div>
+      </div>
+    </div>
+
+    <!-- Techniques in NPP Experiments -->
+    <div class="proj-card rv">
+      <div class="proj-card-header">
+        <div class="proj-icon">🔬</div>
+        <span class="proj-status completed">Experimental Physics</span>
+        <div class="proj-title">Techniques for Nuclear &amp; Particle Physics Experiments — W. R. Leo</div>
+      </div>
+      <div class="proj-card-body">
+        <p class="proj-desc">A hands-on, practical guide to nuclear electronics, signal processing, NIM/CAMAC standards, particle interactions with matter, and error statistics in experimental setups.</p>
+        <div class="proj-meta-row">
+          <span class="proj-tag">Electronics</span>
+          <span class="proj-tag">DAQ</span>
+          <span class="proj-tag">Springer</span>
+        </div>
+        <div class="proj-collaborators">Library: <span>539.72078/LEO</span> · IISER Pune Library</div>
+      </div>
+    </div>
+
+    <!-- Zelevinsky Quantum Physics -->
+    <div class="proj-card rv">
+      <div class="proj-card-header">
+        <div class="proj-icon">🌌</div>
+        <span class="proj-status completed">Quantum Mechanics</span>
+        <div class="proj-title">Quantum Physics (Volumes 1 &amp; 2) — Vladimir Zelevinsky</div>
+      </div>
+      <div class="proj-card-body">
+        <p class="proj-desc">Rigorous and deep exploration of quantum mechanics, from foundational wave mechanics to many-body systems, symmetries, and relativistic extensions.</p>
+        <div class="proj-meta-row">
+          <span class="proj-tag">Quantum Theory</span>
+          <span class="proj-tag">Many-Body</span>
+          <span class="proj-tag">Wiley-VCH</span>
+        </div>
+        <div class="proj-collaborators">Library: <span>530.12/ZEL</span> · IISER Pune Library</div>
+      </div>
+    </div>
+
+    <!-- Arnold Sommerfeld -->
+    <div class="proj-card rv">
+      <div class="proj-card-header">
+        <div class="proj-icon">📐</div>
+        <span class="proj-status completed">Theoretical Physics</span>
+        <div class="proj-title">Mechanics (Lectures on Theoretical Physics) — Arnold Sommerfeld</div>
+      </div>
+      <div class="proj-card-body">
+        <p class="proj-desc">Classic lectures by one of physics' great masters. Elegantly connects Newtonian mechanics, variational principles, rigid body dynamics, and Hamiltonian formulations.</p>
+        <div class="proj-meta-row">
+          <span class="proj-tag">Classical Mechanics</span>
+          <span class="proj-tag">Lagrangian</span>
+          <span class="proj-tag">Academic Press</span>
+        </div>
+        <div class="proj-collaborators">Library: <span>531/SOM</span> · IISER Pune Library</div>
+      </div>
+    </div>
+
+    <!-- Haken & Wolf -->
+    <div class="proj-card rv">
+      <div class="proj-card-header">
+        <div class="proj-icon">⚛️</div>
+        <span class="proj-status completed">Atomic Physics</span>
+        <div class="proj-title">The Physics of Atoms and Quanta — Hermann Haken &amp; Hans Christoph Wolf</div>
+      </div>
+      <div class="proj-card-body">
+        <p class="proj-desc">Introduction to atomic physics experiments and quantum theory. Essential for understanding fine structure, Zeeman and Stark effects, optical transitions, and spectroscopy.</p>
+        <div class="proj-meta-row">
+          <span class="proj-tag">Atomic Physics</span>
+          <span class="proj-tag">Spectroscopy</span>
+          <span class="proj-tag">Springer</span>
+        </div>
+        <div class="proj-collaborators">Library: <span>539.7/HAK</span> · IISER Pune Library</div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="site-footer">
+  <div class="site-footer-inner">
+    <div class="site-footer-brand">
+      <div class="site-footer-mark">Abhiram</div>
+      <p class="site-footer-tagline">Design better scientific communication with clear writing, rigorous ideas, and practical study resources.</p>
+    </div>
+
+    <div class="site-footer-nav">
+      <div class="site-footer-nav-col">
+        <span class="site-footer-col-title">Navigation</span>
+        <a href="index.html">Home</a>
+        <a href="research.html">Research</a>
+        <a href="blog-formal.html">Writing</a>
+        <a href="about.html">About</a>
+        <a href="photography.html">Photography</a>
+      </div>
+      <div class="site-footer-nav-col">
+        <span class="site-footer-col-title">Connect</span>
+        <a href="mailto:abhiram.srinivasa@gmail.com">Email</a>
+        <a href="https://linkedin.com/in/srinivasaabhiram" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+        <a href="https://instagram.com/srinivasa_abhiram" target="_blank" rel="noopener noreferrer">Instagram</a>
+        <a href="https://wa.me/886968133572" target="_blank" rel="noopener noreferrer">WhatsApp</a>
+        <a href="https://line.me/ti/p/~ks.abhiram" target="_blank" rel="noopener noreferrer">LINE</a>
+      </div>
+    </div>
+
+    <p class="site-footer-copy">© Kurapati S. Abhiram 2018–2026. All rights reserved.</p>
+  </div>
+</footer>
+
+<!-- CONTACT MODAL -->
+<div class="modal-overlay" id="contactModal">
+  <div class="liquid-glass-bg"></div>
+  <button class="close-btn-modal" id="closeBtn">&times;</button>
+  <div style="position:relative;z-index:10;width:95%;max-width:1400px;height:90vh;display:flex;flex-direction:column;padding:60px 40px;color:var(--text-main);">
+    <div class="contact-headline-wrap">
+      <div style="font-size:0.7rem;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,0.5);font-weight:700;margin-bottom:14px;">LET'S TALK</div>
+      <h1 style="font-size:clamp(2.5rem,8vw,4rem);font-weight:700;line-height:1.1;margin:0;color:var(--text-main);">Welcome! It's great to meet you.</h1>
+    </div>
+    <div class="contact-rows contact-schematic">
+      <div class="contact-option-large top-pill" data-mailto="mailto:kurapati.srinivasa_abhiram@alumni.iiserpune.ac.in?cc=abhiram.srinivasa@gmail.com&amp;subject=Research%20Collaboration%20Interest" style="background:rgba(255,255,255,0.07);backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,0.1);border-radius:20px;padding:34px;cursor:pointer;transition:all 0.4s cubic-bezier(.32,.72,0,1);position:relative;overflow:hidden;grid-area:collab;">
+        <div style="font-size:0.8rem;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.5);font-weight:700;margin-bottom:15px;">● COLLABORATION</div>
+        <p style="font-size:1.3rem;color:var(--text-main);font-weight:500;margin:0;line-height:1.4;">I'm interested in working together.</p>
+        <div style="font-size:1.8rem;margin-top:15px;opacity:0.6;transition:all 0.3s ease;">→</div>
+      </div>
+      <div class="contact-option-large top-pill" data-mailto="mailto:kurapati.srinivasa_abhiram@alumni.iiserpune.ac.in?cc=abhiram.srinivasa@gmail.com&amp;subject=Hiring%20Opportunity%20Inquiry" style="background:rgba(255,255,255,0.07);backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,0.1);border-radius:20px;padding:34px;cursor:pointer;transition:all 0.4s cubic-bezier(.32,.72,0,1);position:relative;overflow:hidden;grid-area:hiring;">
+        <div style="font-size:0.8rem;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.5);font-weight:700;margin-bottom:15px;">● HIRING</div>
+        <p style="font-size:1.3rem;color:var(--text-main);font-weight:500;margin:0;line-height:1.4;">I'd like to join the team.</p>
+        <div style="font-size:1.8rem;margin-top:15px;opacity:0.6;transition:all 0.3s ease;">→</div>
+      </div>
+      <div class="contact-option-large figure-single-block" data-mailto="mailto:kurapati.srinivasa_abhiram@alumni.iiserpune.ac.in?cc=abhiram.srinivasa@gmail.com&amp;subject=Hi%20Abhiram" style="grid-area:figure;background:rgba(255,255,255,0.07);backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,0.1);border-radius:20px;overflow:hidden;position:relative;">
+        <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=700&h=700&fit=crop" alt="Profile" style="width:auto;height:100%;min-width:330px;display:block;margin-left:auto;object-fit:cover;object-position:right top;">
+        <div class="anything-photo-overlay"></div>
+        <div class="anything-card-content">
+          <div class="anything-card-eyebrow">● ANYTHING ELSE</div>
+          <p class="anything-card-copy">Just say hi / let's just talk.</p>
+          <div class="anything-card-arrow">→</div>
+        </div>
+      </div>
+      <div style="grid-area:actions;display:grid;grid-template-columns:1fr;gap:10px;align-content:start;">
+        <div class="email-btn" style="background:rgba(10,132,255,0.2);border:1px solid rgba(10,132,255,0.45);border-radius:14px;padding:12px 16px;cursor:pointer;transition:all 0.35s ease;">
+          <div style="font-size:0.66rem;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,0.72);font-weight:700;margin-bottom:6px;">EMAIL</div>
+          <div style="font-size:0.86rem;color:var(--text-main);font-weight:600;word-break:break-all;">kurapati.srinivasa_abhiram@alumni.iiserpune.ac.in</div>
+          <div style="font-size:0.75rem;color:var(--mint);margin-top:2px;">cc: abhiram.srinivasa@gmail.com</div>
+        </div>
+        <div class="anything-bottom-row">
+          <div class="whatsapp-btn" style="background:rgba(37,211,102,0.22);border:1px solid rgba(37,211,102,0.5);border-radius:14px;padding:12px 16px;cursor:pointer;transition:all 0.35s ease;">
+            <div style="font-size:0.66rem;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,0.72);font-weight:700;margin-bottom:6px;">WHATSAPP (TAIWAN)</div>
+            <div style="font-size:0.88rem;color:var(--text-main);font-weight:600;">+886 968 133 572</div>
+          </div>
+          <div class="instagram-btn" style="background:rgba(228,64,95,0.2);border:1px solid rgba(228,64,95,0.5);border-radius:14px;padding:12px 16px;cursor:pointer;transition:all 0.35s ease;">
+            <div style="font-size:0.66rem;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,0.72);font-weight:700;margin-bottom:6px;">INSTAGRAM</div>
+            <div style="font-size:0.88rem;color:var(--text-main);font-weight:600;">@srinivasa_abhiram</div>
+          </div>
+        </div>
+        <div class="anything-bottom-row">
+          <div class="line-btn" style="background:rgba(6,199,85,0.22);border:1px solid rgba(6,199,85,0.5);border-radius:14px;padding:12px 16px;cursor:pointer;transition:all 0.35s ease;">
+            <div style="font-size:0.66rem;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,0.72);font-weight:700;margin-bottom:6px;">LINE ID</div>
+            <div style="font-size:0.88rem;color:var(--text-main);font-weight:600;">ks.abhiram</div>
+          </div>
+          <div class="linkedin-btn" style="background:rgba(10,102,194,0.22);border:1px solid rgba(10,102,194,0.5);border-radius:14px;padding:12px 16px;cursor:pointer;transition:all 0.35s ease;">
+            <div style="font-size:0.66rem;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,0.72);font-weight:700;margin-bottom:6px;">LINKEDIN</div>
+            <div style="font-size:0.88rem;color:var(--text-main);font-weight:600;">/in/srinivasaabhiram</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ══════════ CURSOR ══════════
+const cur = document.getElementById('cur');
+document.addEventListener('mousemove', e => {
+  cur.style.left = e.clientX + 'px';
+  cur.style.top  = e.clientY + 'px';
+});
+document.querySelectorAll('a, button, .proj-card, .pub-card, .stat-box, .filter-pill').forEach(el => {
+  el.addEventListener('mouseenter', () => cur.classList.add('big'));
+  el.addEventListener('mouseleave', () => cur.classList.remove('big'));
+});
+
+// ══════════ THEME STATE ══════════
+const themeColorMeta = document.getElementById('browserThemeColor');
+function syncBrowserThemeColor(mode) {
+  if (themeColorMeta) themeColorMeta.setAttribute('content', mode === 'dark' ? '#030305' : '#f4f6f9');
+}
+
+// ══════════ MAIN NAV SLIDER ══════════
+function updateMainNavSlider() {
+  const navWrapper = document.getElementById('main-nav-wrapper');
+  if (!navWrapper) return;
+  const slider = document.getElementById('nav-slider');
+  // Highlight Research
+  const researchLink = navWrapper.querySelector('[data-nav="research"]');
+  if (researchLink && slider) {
+    const li = researchLink.closest('li');
+    const rect = li.getBoundingClientRect();
+    const wrapRect = navWrapper.getBoundingClientRect();
+    slider.style.width = rect.width + 'px';
+    slider.style.transform = `translateX(${rect.left - wrapRect.left}px)`;
+  }
+}
+window.addEventListener('load', updateMainNavSlider);
+window.addEventListener('resize', updateMainNavSlider);
+requestAnimationFrame(updateMainNavSlider);
+
+// ══════════ TOP-CENTER SUBNAV SLIDER ══════════
+const subnavWrapper = document.getElementById('research-subnav-wrapper');
+const subnavSlider = document.getElementById('subnav-slider');
+const subnavLinks = Array.from(subnavWrapper.querySelectorAll('a[data-section]'));
+const sections = {
+  publications: document.getElementById('publications'),
+  projects: document.getElementById('projects'),
+  books: document.getElementById('books')
+};
+let activeSection = 'publications';
+
+function updateSubnavSlider(targetLink) {
+  const link = targetLink || subnavWrapper.querySelector(`[data-section="${activeSection}"]`);
+  if (!link || !subnavSlider) return;
+  const li = link.closest('li');
+  const rect = li.getBoundingClientRect();
+  const wrapRect = subnavWrapper.getBoundingClientRect();
+  subnavSlider.style.width = rect.width + 'px';
+  subnavSlider.style.transform = `translateX(${rect.left - wrapRect.left}px)`;
+}
+
+function switchSection(sectionId) {
+  if (!sections[sectionId]) return;
+  activeSection = sectionId;
+  history.replaceState(null, '', `#${sectionId}`);
+  // Update sections
+  Object.entries(sections).forEach(([id, el]) => {
+    if (!el) return;
+    el.classList.toggle('active', id === sectionId);
+  });
+  // Update tab indicators
+  subnavLinks.forEach(link => {
+    const isActive = link.getAttribute('data-section') === sectionId;
+    link.classList.toggle('active-sub', isActive);
+    link.setAttribute('aria-selected', isActive ? 'true' : 'false');
+  });
+  updateSubnavSlider();
+  // Scroll to top of section smoothly
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+subnavLinks.forEach(link => {
+  link.addEventListener('click', e => {
+    e.preventDefault();
+    const sec = link.getAttribute('data-section');
+    if (sec) switchSection(sec);
+  });
+});
+
+window.addEventListener('load', () => {
+  updateSubnavSlider();
+  updateMainNavSlider();
+});
+window.addEventListener('resize', () => {
+  updateSubnavSlider();
+  updateMainNavSlider();
+});
+requestAnimationFrame(() => {
+  updateSubnavSlider();
+  updateMainNavSlider();
+});
+
+// Handle hash routing
+function applyHashRouting() {
+  const h = window.location.hash.replace('#', '').trim();
+  if (h && sections[h]) switchSection(h);
+}
+applyHashRouting();
+window.addEventListener('hashchange', applyHashRouting);
+
+// ══════════ FILTER PILLS ══════════
+const filterPills = document.querySelectorAll('.filter-pill');
+filterPills.forEach(pill => {
+  pill.addEventListener('click', () => {
+    filterPills.forEach(p => p.classList.remove('active'));
+    pill.classList.add('active');
+    const filter = pill.getAttribute('data-filter');
+    document.querySelectorAll('.pub-card').forEach(card => {
+      if (filter === 'all') {
+        card.style.display = '';
+      } else {
+        const tags = card.getAttribute('data-tags') || '';
+        card.style.display = tags.includes(filter) ? '' : 'none';
+      }
+    });
+  });
+});
+
+// ══════════ SCROLL REVEAL ══════════
+const obs = new IntersectionObserver(entries =>
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('in'); }),
+  { threshold: 0.1 }
+);
+document.querySelectorAll('.rv').forEach(el => obs.observe(el));
+
+// ══════════ PROJECT PROGRESS ANIMATE ON SCROLL ══════════
+const projObs = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      const fill = e.target.querySelector('.proj-progress-fill');
+      if (fill) fill.style.width = fill.style.getPropertyValue('--prog') || getComputedStyle(fill).getPropertyValue('--prog');
+    }
+  });
+}, { threshold: 0.3 });
+document.querySelectorAll('.proj-card').forEach(card => projObs.observe(card));
+
+// ══════════ CONTACT MODAL ══════════
+const contactModal = document.getElementById('contactModal');
+const closeBtn = document.getElementById('closeBtn');
+
+function setWelcomeStartOffset() {
+  const hw = document.querySelector('.contact-headline-wrap');
+  if (!hw) return;
+  const rect = hw.getBoundingClientRect();
+  const cx = window.innerWidth / 2, cy = window.innerHeight / 2;
+  hw.style.setProperty('--welcome-start-x', `${cx - (rect.left + rect.width / 2)}px`);
+  hw.style.setProperty('--welcome-start-y', `${cy - (rect.top + rect.height / 2)}px`);
+}
+function openModal() {
+  contactModal.classList.add('active');
+  document.body.style.overflow = 'hidden';
+  document.documentElement.classList.add('modal-open');
+  requestAnimationFrame(setWelcomeStartOffset);
+}
+function closeModal() {
+  contactModal.classList.remove('active');
+  document.body.style.overflow = 'auto';
+  document.documentElement.classList.remove('modal-open');
+}
+document.querySelectorAll('[data-open-contact-modal]').forEach(btn => btn.addEventListener('click', openModal));
+closeBtn.addEventListener('click', closeModal);
+contactModal.addEventListener('click', e => { if (e.target === contactModal) closeModal(); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && contactModal.classList.contains('active')) closeModal(); });
+
+document.querySelectorAll('.contact-option-large').forEach(card => {
+  card.addEventListener('click', () => {
+    const mailto = card.getAttribute('data-mailto');
+    if (mailto) window.location.href = mailto;
+  });
+});
+
+document.querySelector('.email-btn')?.addEventListener('click', () => {
+  window.location.href = 'mailto:kurapati.srinivasa_abhiram@alumni.iiserpune.ac.in?cc=abhiram.srinivasa@gmail.com';
+});
+document.querySelector('.whatsapp-btn')?.addEventListener('click', () => window.open('https://wa.me/886968133572', '_blank'));
+document.querySelector('.instagram-btn')?.addEventListener('click', () => window.open('https://instagram.com/srinivasa_abhiram', '_blank'));
+document.querySelector('.line-btn')?.addEventListener('click', () => window.open('https://line.me/ti/p/~ks.abhiram', '_blank'));
+document.querySelector('.linkedin-btn')?.addEventListener('click', () => window.open('https://linkedin.com/in/srinivasaabhiram', '_blank'));
+</script>
+<script src="assets/main.js" defer></script>
+</body>
+</html>
